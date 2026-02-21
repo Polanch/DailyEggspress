@@ -1,0 +1,1834 @@
+*,*::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, span {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+html{
+    background-color:#F0DED2;
+}
+
+@font-face{
+    font-family: 'FoodBuka';
+    src: url('../fonts/Food Buka Personal.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.home-box{
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    grid-template-rows: 0.8fr 1.2fr;
+}
+
+.h-icns{
+    width: 64px;
+    height: auto;
+    grid-row: span 2;
+    place-self: center;
+}
+
+.home-box p{
+    font-family: 'FoodBuka', sans-serif;
+    color: #23130B;
+    font-size: 20px;
+    place-self:start;
+    align-self: end;
+    margin-left: 10px;
+}
+
+.home-box h2{
+    margin-left: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: #E8B400;
+    font-size: 40px;
+    place-self: start;
+    font-weight: 600;
+    font-family: 'Jua', sans-serif;
+}
+
+.add-status{
+    font-size: 12px;
+    font-weight: 100;
+    color: green;
+}
+
+/*
+bg: #23130B
+surface: #352013
+light brown: #9C6D55
+yellow: #F4D35E
+yellow-strong: #E8B400
+accent/text: #F7F3EA
+*/
+
+.side-nav{
+    position: fixed;
+    overflow: auto;
+    left: 0;
+    height: 100vh;
+    width: 230px;
+    z-index: 1;
+    background-color: #23130B;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 110px auto auto 1fr;
+    transition: left 0.3s ease;
+}
+
+.logo-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.menu-container{
+    width: 100%;
+    height: auto;
+}
+
+.empty{
+    width: 100%;
+    height: auto;
+}
+
+.main-content{
+    position: relative;
+    height: auto;
+    width: calc(100% - 230px);
+
+    margin-left: 230px;
+    transition: width 0.3s ease, margin-left 0.3s ease;
+}
+
+.top-nav{
+    position: sticky;
+    top: 0;
+    height: 60px;
+    width: 100%;
+    background-color: #23130B;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transition: padding-left 0.3s ease;
+    z-index: 1;
+}
+
+.top-menu{
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap:0.5rem
+}
+
+.top-btn{
+    width: auto;
+    height: 30px;
+    border: none;
+    font-family: 'FoodBuka', sans-serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* hide icon by default; show only on small screens where text is hidden */
+.top-icn{
+    display: none;
+}
+
+.t1{
+    background-color: #23130B;
+    color: #E8B400;
+    border: 2px solid #E8B400;
+}
+
+.t2{
+    background-color: #E8B400;
+    color: #23130B;
+}
+
+.t2:hover{
+    background-color: #F4D35E;
+}
+
+.t1:hover{
+    background-color: #4b2e1b;
+}
+
+.menu-btn{
+    width: auto;
+    height: 30px;
+    background:none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:0.5rem;
+    cursor: pointer;
+}
+
+/* smooth hide/show for the menu label */
+.menu-btn h2{
+    margin: 0;
+    font-size: 18px;
+    transition: opacity 160ms ease, transform 160ms ease, width 160ms ease;
+}
+
+.menu-btn:hover h2{
+    color: #F4D35E;
+}
+
+.menu-btn:hover .mb:not(:nth-child(3)){
+    background-color: #F4D35E;
+}
+
+/* Hover-triggered staggered jump for burger bars */
+.menu-btn:hover .mb{
+    animation: jump 0.8s ease-in-out infinite;
+}
+
+.menu-btn:hover .mb:nth-child(1){ animation-delay: 0s; }
+.menu-btn:hover .mb:nth-child(2){ animation-delay: 0.1s; }
+.menu-btn:hover .mb:nth-child(3){ animation-delay: 0.2s; }
+.menu-btn:hover .mb:nth-child(4){ animation-delay: 0.3s; }
+
+.burger{
+    width: 22px;
+    height: 22px;
+    position: relative;
+}
+
+.mb{
+    height: 10px;
+    position: absolute;
+}
+
+.mb:nth-child(1){
+    width: 10px;
+    top: 0;
+    left: 0;
+    border-radius: 2px;
+    background-color: #9C6D55;
+}
+.mb:nth-child(2){
+    width: 10px;
+    bottom: 0;
+    left: 0;
+    border-radius: 2px;
+    background-color: #9C6D55;
+}
+
+.mb:nth-child(3){
+    top: 0;
+    right: 1px;
+    width: 8px;
+    background-color: #F0DED2;
+    border-radius: 55% 55% 45% 45% / 60% 60% 40% 40%;
+}
+.mb:nth-child(4){
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    border-radius: 2px;
+    background-color: #9C6D55;
+}
+
+@keyframes jump{
+    0%{
+        transform: translateY(0);
+    }
+    50%{
+        transform: translateY(-2px);
+    }
+    100%{
+        transform: translateY(0);
+    }
+}
+
+.logo-box{
+    width: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: 60px auto;
+    grid-template-rows: 60px;
+    transform: translateX(-10px);
+}
+
+.egg{
+    width: 60px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+    grid-row: span 2;
+}
+
+.logo-box h1, .title-logo h1{
+    font-family: 'FoodBuka', sans-serif;
+    z-index: 2;
+    animation: logo-appear 0.3s ease-out forwards;
+}
+
+@keyframes logo-appear{
+    0%{
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.egg img{
+    width: 45px;
+    height: auto;
+    position: absolute;
+}
+
+
+/* ---------------------------
+   Workspace: tool-table styles
+   --------------------------- */
+.workspace .tool-table table {
+    width: 100%;
+    border: 1px solid #e6d6ce;
+    background: #fdf7f3; 
+}
+
+.workspace .tool-table th,
+.workspace .tool-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #e6e6e6;
+    text-align: left;
+}
+
+.workspace .tool-table thead th {
+    background: transparent;
+    font-weight: 600;
+    background: #4b2e1b;
+    color: white;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 0.85rem;
+}
+
+.status-draft { background: #6c757d; }
+.status-scheduled { background: #17a2b8; }
+.status-published { background: #28a745; }
+.status-trash { background: #dc3545; }
+
+.t-actions button {
+    margin-right: 6px;
+    padding: 6px 8px;
+    border: 0;
+    background: #f2f2f2;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.t-actions button.action-delete {
+    background: #ffe6e6;
+}
+
+/* Make Title column take most space and set sensible widths for other columns */
+.workspace .tool-table table th:first-child,
+.workspace .tool-table table td:first-child {
+    width: auto;
+}
+.workspace .tool-table table th:nth-child(1),
+.workspace .tool-table table td:nth-child(2) {
+    width: auto;
+}
+.workspace .tool-table table th:nth-child(3),
+.workspace .tool-table table td:nth-child(3) {
+    width: auto;
+}
+.workspace .tool-table table th:nth-child(4),
+.workspace .tool-table table td:nth-child(4) {
+    width: auto;
+}
+.workspace .tool-table table th:nth-child(5),
+.workspace .tool-table table td:nth-child(5) {
+    width: 100px;
+}
+
+/* ensure long titles wrap nicely */
+.workspace .tool-table td:first-child { overflow-wrap: break-word; }
+
+/* trash icon inside delete button */
+.t-actions .trash-icn{ width:16px; height:auto; display:block; }
+.t-actions .action-delete{ padding:6px; display:inline-flex; align-items:center; justify-content:center; }
+
+/* Table footer with pagination */
+.workspace .tool-table .table-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 12px 8px;
+    margin-top: 6px;
+}
+.workspace .tool-table .tf-left{ color:#6b6b6b; font-size:0.95rem; }
+.workspace .tool-table .tf-right{ display:flex; gap:6px; }
+.workspace .tool-table .page-btn{
+    border: 1px solid #e0d3cb;
+    background: #f8f0ec;
+    padding:6px 10px;
+    border-radius:4px;
+    cursor:pointer;
+}
+.workspace .tool-table .page-btn:hover{ background:#f0e6e0; }
+
+#e-left{
+    top:13px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 2;
+    animation: left-move 1s ease-out forwards;
+}
+
+#e-right{
+    bottom:3px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 2;
+}
+
+#chick{
+    z-index: 1;
+    width: 25px;
+    height: auto;
+    position: absolute;
+    bottom: 6px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    transform: translateY(0);
+    animation: chick-move 1s ease-out forwards;
+}
+
+.egg:hover #e-left{
+    animation: left-move-reverse 0.45s ease-out forwards;
+}
+.egg:not(:hover) #e-left{
+    animation: left-move 1s ease-out forwards;
+}
+.egg:hover #chick{
+    animation: chick-move-reverse 0.45s ease-out forwards;
+}
+.egg:not(:hover) #chick{
+    animation: chick-move 1s ease-out forwards;
+}
+
+.logo-box p{
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-family: 'FoodBuka', sans-serif;
+    font-weight: 100;
+    width: auto;
+    margin-left: 46px;
+    animation: logo-appear 0.3s ease-out forwards;
+    opacity: 0;
+    animation-delay: 1s;
+    border-top: 2px solid #9C6D55;
+}
+
+.title-logo{
+    width: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.egg-crack{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: -25px;
+    left: 62px;
+    transform: rotate(90deg);
+    z-index: 3;
+}
+
+#egg-crack-left{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation:crack-left 1.5s ease-out forwards;
+}
+
+#egg-crack-right{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation:crack-right 1.3s ease-out forwards;
+}
+
+#yolk{
+    position: absolute;
+    width: 35px;
+    height: auto;
+    top:6px;
+    left: 64px;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+    transform-origin: center center;
+    animation: egg-appear 0.7s forwards, egg-rotate 15s linear infinite 0.7s;
+}
+
+ @keyframes crack-left{
+    0%{
+        transform:rotate(0) translateY(0);
+    }
+    45%{
+        transform:rotate(-40deg) translateY(-30px);
+    }50%{
+        transform: rotate(60deg)translateY(-7px) translateX(-15px);
+    }60%{
+        transform: rotate(100deg)translateY(8px)translateX(-30px);
+    }80%{
+        transform: translateX(0) translateY(-40px)rotate(120deg);
+    }95%{
+        transform: translateX(15px) translateY(-45px) rotate(200deg);
+    }100%{
+        transform: translateX(40px) translateY(-45px) rotate(270deg);
+    }
+}
+@keyframes crack-right{
+    0%{
+        transform:rotate(0) translateY(0);
+    }
+    50%{
+         transform:rotate(40deg) translateY(30px);
+    }90%{
+        transform: rotate(-90deg)translateY(-5px) translateX(-25px);
+    }100%{
+        transform: rotate(-110deg)translateY(-15px)translateX(-29px);
+    }
+}
+
+@keyframes egg-appear{
+    0%{
+        opacity: 0;
+        transform: translateY(-20px) scale(0.5);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(-3px) scale(1);
+    }
+}
+
+@keyframes egg-rotate{
+    /* preserve translateY/scale from appear, then rotate */
+    0%{
+       transform: translateY(-3px) scale(1) rotate(0deg);
+    }
+    100%{
+        transform: translateY(-3px) scale(1) rotate(360deg);
+    }
+}
+
+
+.title-logo h1{
+    font-size: 30px;
+    font-family: 'FoodBuka', sans-serif;
+    width: auto;
+}
+
+
+@keyframes left-move{
+    0%{
+        transform: translateY(0px) translateX(0px);
+    }
+    100%{
+        transform: translateY(-10px) translateX(0px);
+    }
+}
+
+@keyframes chick-move{
+    0%{
+        transform: translateX(0px) translateY(0);
+    }
+    100%{
+        transform: translateX(2px) translateY(-10px);
+    }
+}
+
+@keyframes left-move-reverse{
+    0%{
+        transform: translateY(-10px) translateX(0px);
+    }
+    100%{
+        transform: translateY(0px) translateX(0px);
+    }
+}
+
+@keyframes chick-move-reverse{
+    0%{
+        transform: translateX(2px) translateY(-10px);
+    }
+    100%{
+        transform: translateX(0px) translateY(0px);
+    }
+}
+
+.admin-menu{
+    list-style: none;
+    gap:10px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+.admin-menu li{
+    width: 100%;
+    height: 40px;
+}
+
+.admin-menu li:hover{
+    background-color: #352013;
+}
+
+.admin-menu li a{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #F7F3EA;
+    width: 100%;
+    height: 100%;
+    padding-left: 20px;
+    gap: 15px;
+}
+
+.admin-menu-icn{
+    width: 20px;
+    height: 20px;
+}
+
+.icon-holder{
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+
+.profile-container{
+    height: 180px;
+    width: 100%;
+    align-self: end;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 80px auto;
+    padding: 0.5rem;
+    position: relative;
+}
+
+#pfpic{
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    border-radius: 50%;
+    right: 15px;
+    top: 60px;
+    border: 5px solid #23130B;
+    object-fit: cover;
+    object-position: center;
+}
+
+.brand{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    color: white;
+    padding-bottom: 1rem;
+    font-size: 12px;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+.profile-bg{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-box{
+    color: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+.profile-box h3{
+    color: #E8B400;
+}
+
+.edit-profile{
+    width: 100%;
+    height: 30px;
+    cursor: pointer;
+    background-color: #E8B400;
+    border: none;
+    border-radius: 3px;
+    color: #23130B;
+    margin-top: 0.5rem;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+.edit-profile:hover{
+    background-color: #F4D35E;
+}
+
+/* Active state when side nav is hidden (toggled via JS) */
+body.active .side-nav{
+    left: -230px;
+}
+
+body.active .main-content{
+    width: 100%;
+    margin-left: 0;
+}
+.top-nav h2{
+    color: #F7F3EA;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+
+.content-body{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    background-color:#F0DED2;
+}
+
+.the-footer{
+    width: 100%;
+    height: 100%;
+}
+/*Dashboard css*/
+
+.home-header{
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 30px 30px 120px;
+    padding: 15px;
+    gap:15px;
+}
+
+.admin-header{
+    grid-column: span 4;
+    font-family: 'FoodBuka', sans-serif;
+    color: #9C6D55;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap:1ch;
+}
+
+.admin-subheader{
+    font-family: 'FoodBuka', sans-serif;
+    color: #23130B;
+    font-size: 25px;
+    grid-column: span 4;
+}
+
+.slash{
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
+#hh{
+    color: #23130B;
+}
+
+.admin-h-icn{
+    width: 16px;
+    height: 16px;
+}
+
+.home-box{
+    width: 100%;
+    height: 100%;
+    background-color: #FCEFE8;
+    box-shadow: 0 4px 3px rgba(0,0,0,0.12);
+    border-radius: 10px;
+}
+
+.home-body{
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap:15px;
+    padding: 15px;
+}
+
+.hb-big{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+}
+
+.hb-small{
+    width: 100%;
+    height: auto;
+    background-color: #FCEFE8;
+    box-shadow: 0 4px 3px rgba(0,0,0,0.12);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+@media (max-width: 1080px) {
+    .home-header{
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    .home-header h1{
+        grid-column: span 2;
+    }
+    .home-body{
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 780px) {
+    .home-header{
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        padding: 10px;
+        gap: 10px;
+    }
+    .home-header h1{
+        font-size: 18px;
+    }
+
+    .home-body{
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    /* Reduce sizes inside home boxes for small screens */
+    .home-box{
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .home-box p{
+        font-size: 14px;
+        margin-left: 8px;
+    }
+
+    .home-box h2{
+        font-size: 28px;
+        margin-left: 8px;
+    }
+
+    .h-icns{
+        width: 48px;
+    }
+
+    .hb-big{ gap:12px; }
+    .hb-small{ padding: 0.75rem; }
+
+    /* Tighten line-height so content takes less vertical space */
+    .home-box, .home-box *{
+        line-height: 1.15;
+    }
+    
+    .add-status{
+        padding-bottom: 4px;
+
+    }
+
+}
+
+@media (max-width: 860px) {
+    .side-nav{
+        left: unset;
+        right: -230px;
+        transition: right 0.3s ease;
+    }
+    body.active .side-nav{
+        left: unset;
+        right: 0;
+        z-index: 5;
+    }
+
+    /* target the body element with the .active class (not an element named .body) */
+    .main-content{
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* Make top menu buttons icon-only 50x50 */
+    .top-menu{
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .top-menu .top-btn{
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        overflow: hidden;
+        border: none;
+        background: none;
+    }
+
+    /* hide the text label and show the icon */
+    .top-menu .top-btn .btn-text{
+        display: none;
+    }
+    .top-menu .top-btn .top-icn{
+        display: block;
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+    /* slightly reduce top-nav padding so buttons fit nicely */
+    .top-nav{
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 460px) {
+    /* show the label by default but hide it when the menu is active (toggled)
+       so the menu button can toggle both the sidebar and the label visibility */
+    .menu-btn h2{
+        display: inline-block;
+        opacity: 1;
+        transform: translateX(0);
+        width: auto;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* when body has .active (menu toggled), hide the label with a smooth fade/shift */
+    body.active .menu-btn h2{
+        opacity: 0;
+        transform: translateX(-6px);
+        width: 0;
+        pointer-events: none;
+    }
+}
+
+/*Workspace CSS*/
+
+.workspace{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap:15px;
+}
+
+.workspace-header{
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 30px 30px;
+    padding: 15px;
+    gap:15px;
+}
+
+.workspace-body{
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 35px auto auto 30px;
+    gap:15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.tool-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+}
+
+.search-bar{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.search-bar input{
+    width: 100%;
+    height: 100%;
+    padding-left: 40px;
+    border: 2px solid #9c6d554a;
+    border-radius: 5px;
+    margin: 0;
+}
+
+.search-bar input:focus{
+    outline: none;
+}
+
+.search-bar .admin-h-icn{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    left: 10px;
+}
+
+.create-blog-btn{
+    width: 130px;
+    height: 100%;
+    background-color: #E8B400;
+    border: none;
+    border-radius: 3px;
+    color: #23130B;
+    font-family: 'FoodBuka', sans-serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-blog-btn:hover{
+    background-color: #f6c103;
+    transform: translateY(-3px);
+}
+
+.tool-subheader{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 5px;
+    background-color: #F7F3EA;
+}
+
+.t-box{
+    width: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap:2px;
+}
+
+.t-option{
+    width: auto;
+    height: 40px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border: none;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+/* animated underline using pseudo-element */
+.t-option::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 5px;
+    background: #23130B;
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+/* when option becomes active, play slide-in */
+.t-option.active::after{
+    animation: underline-in 300ms ease forwards;
+}
+
+/* when option is exiting, play slide-out (originates from right) */
+.t-option.exiting::after{
+    animation: underline-out 300ms ease forwards;
+}
+
+@keyframes underline-in{
+    from{ transform: scaleX(0); transform-origin: left; }
+    to{ transform: scaleX(1); transform-origin: left; }
+}
+
+@keyframes underline-out{
+    from{ transform: scaleX(1); transform-origin: right; }
+    to{ transform: scaleX(0); transform-origin: right; }
+}
+
+/* keep a sensible focus/hit area on small screens */
+.t-option{
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.filter-box{
+    display: flex;
+    align-items: center;
+    gap:10px;
+}
+
+.filter-box button{
+    border: none;
+}
+
+.f-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+#list-style-btn, #grid-style-btn, #header-previous-btn, #header-next-btn{
+    width: 27px;
+    height: 27px;
+    border-radius: 2px;
+    background-color: white;
+    border: 1px solid #9c6d5583;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+#list-style-btn:hover, #grid-style-btn:hover, #header-previous-btn:hover, #header-next-btn:hover{
+    background-color: #9c6d552a;
+}
+
+
+#filter-select{
+    width: auto;
+    height: 27px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid #9c6d5583;
+    border-radius: 3px;
+}
+
+#filter-select:focus{
+    outline: none;
+    border-color: #9c6d55;
+}
+
+@media (max-width: 1100px) {
+    .tool-subheader{
+        flex-direction: unset;
+        justify-content: unset;
+        align-items: unset;
+        padding: unset;
+        gap: 10px;
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px 50px;
+        background: unset;
+    }
+    .t-box{
+        width: 100%;
+        height: 100%;
+        padding-left: 15px;
+        background-color: #FCEFE8;
+    }
+
+    .filter-box{
+        display: flex;
+        gap:5px;
+        height: 100%;
+    }
+}
+
+@media (max-width: 550px) {
+    .workspace-body{
+        grid-template-columns: 1fr;
+        grid-template-rows: 35px auto auto auto;
+    }
+    .t-option{
+        font-size: 10px;
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    .tool-subheader{
+        grid-template-columns: 1fr;
+        grid-template-rows: 40px 40px;
+    }
+    .t-option::after{
+        height: 3px;
+    }
+
+    .tool-table{
+        font-size: 12px;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 10px;
+    }
+
+    .t-actions{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+    .workspace .tool-table table th:nth-child(5),
+    .workspace .tool-table table td:nth-child(5) {
+        width: auto
+    }
+
+}
+
+.workspace-editor{
+    width: 100%;
+    height: 600px;
+    display: grid;
+    grid-template-columns: auto 300px;
+    grid-template-rows: 1fr;
+    padding-left: 15px;
+    padding-right: 15px;
+    gap: 15px;
+}
+
+.editor-left{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.editor-right{
+    background-color: red;
+}
+
+.drop-image-box{
+  border: 2px dashed #23130B;
+  border-radius: 8px;
+  min-height: 180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background-size:cover;
+  background-position:center;
+  cursor:pointer;
+  transition: border-color .15s, background-color .15s;
+}
+.drop-image-box.dragover{ border-color:#3b82f6; background-color:#f0f8ff; }
+.drop-image-box .placeholder{ color:#666; text-align:center; padding:1rem; pointer-events:none; }
+.drop-image-box .remove-image{
+  position:absolute;
+  top:8px; right:8px;
+  background:#fff; border:1px solid #ddd; padding:4px 8px; cursor:pointer;
+}
+
+.editor-form-window{
+    width: 100%;
+    height: 100%;
+}
+
+.editor-form-window form{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.editor-form-group:nth-child(2){
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 15px;
+}
+
+.tag-editor{
+    width: 100%;
+    height: 100%;
+    background-color:#FCEFE8;
+    box-shadow: 0 4px 3px rgba(0,0,0,0.12);
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+}
+
+.editor-form-group h1{
+    width: 100%;
+    font-size: 22px;
+    font-family: 'FoodBuka', sans-serif;
+}
+
+.tag-editor .tag-input{
+    width: 100%;
+    height: 35px;
+    border: 1px solid #9c6d5583;
+    border-radius: 3px;
+    padding-left: 10px;
+}
+
+.tag-display{
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    width: 100%;
+    height: 150px;
+    overflow: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 3px rgba(0,0,0,0.12);
+    background-color: #FCEFE8;
+}
+
+.add-tag-btn{
+    width: auto;
+    height: 30px;
+    background-color: #E8B400;
+    border: none;
+    border-radius: 3px;
+    color: #23130B;
+    font-family: 'FoodBuka', sans-serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-tag-btn:hover{
+    background-color: #f6c103;
+    transform: translateY(-3px);
+}
+
+/* Tag display list - show tags as pill chips */
+#tag-display-list{
+    list-style: none;
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+#tag-display-list li{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white; /* dark brown */
+    color: #23130B;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: 'FoodBuka', sans-serif;
+    font-size: 13px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.12);
+}
+
+#tag-display-list li span{
+    line-height: 1;
+}
+
+.remove-tag-btn{
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #23130B;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0;
+}
+
+.remove-tag-btn{
+    color: #23130B;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+}
+
+.editor-form-group:nth-child(3){
+    background-color: #FCEFE8;
+    box-shadow: 0 4px 3px rgba(0,0,0,0.12);
+    height: auto;
+    margin-bottom: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-radius: 5px;
+}
+
+.tool-item #title{
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    border: 1px solid #9c6d5583;
+    border-radius: 5px;
+}
+
+.tool-item #title:focus{
+    outline: none;
+}
+
+.tool-header{
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+textarea.auto-grow{
+    resize: none;
+    width: 100%;
+    /* enforce fixed box of 600px so content scrolls inside */
+    height: 600px;
+    min-height: 600px;
+    max-height: 600px;
+    /* prevent flex parents from stretching the textarea */
+    flex: 0 0 600px;
+    overflow: auto;
+    overflow-wrap: break-word;
+    padding: 15px;
+    border: 1px solid #9c6d5583;
+    box-sizing: border-box;
+}
+
+textarea.auto-grow:focus{
+    outline: none;
+}
+
+.edit-btn-publish{
+    width: auto;
+    height: 30px;
+    background-color: #E8B400;
+    border: none;
+    border-radius: 3px;
+    color: #23130B;
+    font-family: 'FoodBuka', sans-serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn-save{
+    width: auto;
+    height: 30px;
+    background-color: #23130B;
+    border: none;
+    border-radius: 3px;
+    color: #FCEFE8;
+    font-family: 'FoodBuka', sans-serif;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-body{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tool-item-header{
+    display: flex;
+    align-items: center;
+    gap:2px;
+}
+.tool-item-header button{
+    padding: 5px;
+    width: 25px;
+    height: 25px;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    border: 1px solid #9c6d5583;
+}
+
+/* removed single justify button; image buttons inherit toolbar styles */
+
+.tool-item:nth-child(2){
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* allow the editor tool-item to take available space but not force the form to grow
+   set flex and min-height:0 so children with overflow can scroll correctly */
+.tool-item:nth-child(2){
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* make the contenteditable/editor area fill its parent and scroll internally */
+.tool-item:nth-child(2) > .editor-content{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.tool-item-header button:hover{
+    background-color: #9c6d552a;
+}
+
+/* active state for toolbar buttons */
+.tool-item-header button.active{
+    background-color: #9c6d552a;
+    color: #FCEFE8;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+}
+.tool-item-header button{
+    transition: background-color .12s ease, color .12s ease;
+}
+
+/* table picker (inside t3 button) */
+#t3-btn{ position: relative; }
+.table-picker{
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    display: none;
+    z-index: 80;
+}
+.table-picker.open{ display: block; }
+.table-picker .picker-panel{
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+.picker-grid{
+    display: grid;
+    grid-template-columns: repeat(8, 20px);
+    grid-auto-rows: 20px;
+    gap: 6px;
+    padding: 6px;
+}
+.picker-cell{
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.picker-cell.hover{ background: #f0f0f0; border-color:#c7a98b; }
+
+/* styles for tables inserted by the editor */
+.editor-content .inserted-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    table-layout: fixed;
+}
+.editor-content .inserted-table th,
+.editor-content .inserted-table td{
+    border: 1px solid #e6d6ce;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+    word-break: break-word;
+}
+.editor-content .inserted-table thead th{
+    background: #9C6D55;
+    /* allow user-applied inline colors (foreColor) to show inside header cells */
+    color: inherit;
+    font-weight: 600;
+}
+.editor-content .inserted-table img{ max-width:100%; height:auto; display:block; }
+
+/* image wrapper, resize handle and toolbar inside editor */
+.editor-content .img-wrapper{
+    display: inline-block;
+    position: relative;
+    max-width: 100%;
+}
+.editor-content .img-wrapper img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+.editor-content .img-wrapper.flow-left{ float: left; margin: 0 12px 12px 0; }
+.editor-content .img-wrapper.flow-right{ float: right; margin: 0 0 12px 12px; }
+.editor-content .img-wrapper.flow-none{ display: block; margin: 12px 0; }
+.editor-content .img-wrapper.selected{ outline: 2px solid rgba(36,24,20,0.12); }
+.editor-content .img-wrapper .img-handle{
+    width: 12px; height: 12px; position: absolute; right: -6px; bottom: -6px;
+    background: #fff; border: 1px solid #9C6D55; border-radius: 2px; cursor: se-resize;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+}
+.editor-content .image-toolbar{
+    position: absolute;
+    bottom: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    display: none;
+    gap: 6px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e6d6ce;
+    padding: 4px;
+    border-radius: 4px;
+    z-index: 9999;
+}
+.editor-content .image-toolbar button{ background: #f7f3ea; border: 1px solid #e0d3cb; padding: 4px 6px; cursor: pointer; border-radius: 3px; }
+.picker-cell.selected{ background: #f6c103; border-color:#d18b00; }
+.picker-footer{ text-align: center; padding-top:6px; font-size:12px; color:#333; }
+
+#bold-btn{
+    font-weight: 600;
+    color: #9C6D55;
+}
+
+#italic-btn{
+    font-style: italic;
+    color: #9C6D55;
+}
+
+#underline-btn{
+    text-decoration: underline;
+    color: #9C6D55;
+}
+
+#t5-btn{
+    font-size: 12px;
+    color: #9C6D55;
+    position: relative;
+}
+
+.underline{
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 90%;
+    height: 3px;
+    background-color: #23130B;
+}
+
+/* color palette for text color picker */
+.color-palette{
+    position: absolute;
+    display: none;
+    padding: 6px;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    z-index: 60;
+    flex-wrap: wrap;
+    min-width: 160px;
+}
+.color-palette.open{ display: flex; }
+.color-swatch{
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-sizing: border-box;
+}
+.color-swatch.selected{
+    outline: 2px solid rgba(0,0,0,0.12);
+}
+
+/* placement helpers (the palette is inside the button so these adjust where it pops out) */
+.color-palette.below{ top: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.color-palette.above{ bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); }
+.color-palette.right{ left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.color-palette.left{ right: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+
+/* small smooth update for underline color change */
+.underline{ transition: background-color .18s ease; }
+
+/* hex input inside palette */
+.color-hex-input{
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+}
+.color-hex-input:focus{
+    outline: none;
+    border-color: #9c6d55;
+}
+
+/* contenteditable editor styling */
+.editor-content{
+    /* fixed editor height to match textarea.auto-grow */
+    height: 600px;
+    min-height: 400px;
+    max-height: 400px;
+    flex: 0 0 400px;
+    padding: 12px;
+    border: 1px solid #9c6d5583;
+    border-radius: 4px;
+    background: #fff;
+    overflow: auto;
+}
+.editor-content:focus{
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(156,109,85,0.06);
+}
+
+/* sensible list indentation inside the editor */
+.editor-content ul,
+.editor-content ol{
+    margin: 0.5em 0;
+    padding-left: 1.6rem; /* indent for the list marker + content */
+    list-style-position: outside;
+}
+.editor-content ol{ padding-left: 2rem; }
+.editor-content li{
+    margin: 0.15em 0;
+}
+/* deeper nesting increases indent */
+.editor-content ul ul,
+.editor-content ol ol,
+.editor-content ul ol,
+.editor-content ol ul{
+    padding-left: 1.6rem;
+}
+
+/* small style for inserted tables */
+.editor-content table.inserted-table{ border-collapse: collapse; margin: 0.5em 0; width: auto; }
+.editor-content table.inserted-table td{ border: 1px solid #d0c7bd; }
+
+.tool-icn{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tool-footer{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+@media (max-width: 1100px) {
+    .editor-form-group:nth-child(2){
+       grid-template-columns: 1fr;
+       grid-template-rows: 1fr 1fr;
+    }
+}
+
+@media (max-width: 940px) {
+    .workspace-editor{
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+    }
+}
+
+@media (max-width: 400px) {
+   .workspace-editor{
+        gap:10px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .tool-body{
+       gap: 10px;
+    }
+    .workspace-body{
+        gap:10px;
+    }
+}   

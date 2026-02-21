@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Panel</title>
+    @vite('resources/css/admin_style.css')
+</head>
+<body>
+    <div class="side-nav">
+        <div class="logo-container">
+            <div class="logo-box">
+                <span class="egg">
+                    <img src="/images/eggleft.png" id="e-left">
+                    <img src="/images/adminchick.png" id="chick">
+                    <img src="/images/eggright.png" id="e-right">
+                </span>
+                <span class="title-logo">
+                    <div class="egg-crack">
+                        <img src="/images/eggleft.png" id="egg-crack-left">
+                        <img src="/images/eggright.png" id="egg-crack-right">
+                    </div>
+                    <h1>myBL&nbsp;&nbsp;G</h1>
+                    <img src="/images/yolk.png" id="yolk">
+                    <p>Eggministrator</p>
+                </span>
+            </div>
+        </div>
+        <div class="profile-container">
+            <img src="/thumbnails/something4.jpg" class="profile-bg">
+            <div class="profile-box">
+                <h3>John Lloyd Olipani</h3>
+                <p>Administrator</p>
+                <button class="edit-profile">Edit Profile</button>
+            </div>
+            <img src="/images/pfp1.jpg" id="pfpic">
+        </div>
+        <div class="menu-container">
+            <ul class="admin-menu">
+                <li>
+                    <a href="/admin/dashboard" class="active">
+                        <img src="/images/menu1.png" class="admin-menu-icn">
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/workspace">
+                        <img src="/images/menu2.png" class="admin-menu-icn">
+                        <p>Workspace</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/">
+                        <img src="/images/menu3.png" class="admin-menu-icn">
+                        <p>Comments</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/">
+                        <img src="/images/menu4.png" class="admin-menu-icn">
+                        <p>Posts</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/">
+                        <img src="/images/menu5.png" class="admin-menu-icn">
+                        <p>Gallery</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/">
+                        <img src="/images/menu6.png" class="admin-menu-icn">
+                        <p>Users</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <p class="brand">All Rights Reserved &copy;</p>
+    </div>
+    <div class="main-content">
+        <div class="top-nav">
+            <button class="menu-btn" aria-label="Toggle menu">
+                <div class="burger">
+                    <span class="mb"></span>
+                    <span class="mb"></span>
+                    <span class="mb"></span>
+                    <span class="mb"></span>
+                </div>
+                <h2>Menu</h2>
+            </button>
+            
+            <div class="top-menu">
+                <a class="top-btn t1" href="/home" aria-label="View Website">
+                    <img src="/images/top1.png" class="top-icn">
+                    <span class="btn-text">View Website</span>
+                </a>
+                <a class="top-btn t2" href="" aria-label="Sign Out">
+                    <img src="/images/top2.png" class="top-icn">
+                    <span class="btn-text">Sign Out</span>
+                </a>
+            </div>
+        </div>
+        <div class="content-body">
+            @yield('content')
+        </div>
+    </div>
+    @vite('resources/js/admin_script.js')
+</body>
+</html>

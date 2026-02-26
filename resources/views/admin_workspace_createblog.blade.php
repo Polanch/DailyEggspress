@@ -1,6 +1,29 @@
 @extends('layouts.admin_layout')
 
 @section('content')
+    @if (session('success'))
+        <div id="popup-success" style="position:fixed;top:50px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:#e6ffe6;border:2px solid #16a34a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 16px rgba(0,0,0,0.2);">
+            <div style="padding:20px;text-align:center;color:#166534;font-size:18px;">{{ session('success') }}</div>
+            <button onclick="document.getElementById('popup-success').style.display='none'" style="margin-bottom:20px;padding:8px 24px;background:#16a34a;color:#fff;border:none;border-radius:4px;cursor:pointer;">Okay</button>
+        </div>
+    @endif
+    @if ($errors->any() || session('error'))
+        <div id="popup-error" style="position:fixed;top:50px;left:50%;transform:translateX(-50%);width:300px;min-height:200px;max-height:500px;background:#fff0f0;border:2px solid #db2777;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 16px rgba(0,0,0,0.2);overflow-y:auto;">
+            <div style="padding:20px;text-align:center;color:#b91c1c;font-size:18px;">
+                @if (session('error'))
+                    {{ session('error') }}
+                @endif
+                @if ($errors->any())
+                    <ul style="margin:0;padding:0;list-style:none;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+            <button onclick="document.getElementById('popup-error').style.display='none'" style="margin-bottom:20px;padding:8px 24px;background:#db2777;color:#fff;border:none;border-radius:4px;cursor:pointer;">I Understand</button>
+        </div>
+    @endif
     <div class="workspace">
         <div class="workspace-header">
             <h1 class="admin-header"><img src="/images/menu1.png" class="admin-h-icn">Dashboard<span class="slash">/</span>Workspace<span class="slash">/</span> <span id="hh">Create Blog</span></h1>
@@ -8,21 +31,21 @@
         </div>
         <div class="workspace-editor">
             <div class="editor-left">
-                <div class="drop-image-box" id="dropImageBox">
-                    <input type="file" id="dropImageInput" accept="image/*" style="display:none">
-                    <button type="button" class="remove-image" style="display:none">Remove</button>
-                    <div class="placeholder">
-                        <svg width="64" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#9C6D55" stroke-width="1.5" fill="none"/>
-                            <circle cx="8.5" cy="9.5" r="1.5" fill="#9C6D55"/>
-                            <path d="M21 19l-6-8-5 6-3-4L3 19" stroke="#9C6D55" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <div>Click or drop an image here</div>
-                    </div>
-                </div>
                 <div class="editor-form-window">
-                    <form action="" method="post">
+                    <form action="{{ route('blogs.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
+                        <div class="drop-image-box" id="dropImageBox">
+                            <input type="file" id="dropImageInput" name="thumbnail" accept="image/*" style="display:none">
+                            <button type="button" class="remove-image" style="display:none">Remove</button>
+                            <div class="placeholder">
+                                <svg width="64" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="#9C6D55" stroke-width="1.5" fill="none"/>
+                                    <circle cx="8.5" cy="9.5" r="1.5" fill="#9C6D55"/>
+                                    <path d="M21 19l-6-8-5 6-3-4L3 19" stroke="#9C6D55" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <div>Click or drop an image here</div>
+                            </div>
+                        </div>
                         <div class="editor-form-group">
                             <div class="tag-editor">
                                 <h1>Add New Tags</h1>
@@ -34,6 +57,8 @@
                                 <ul id="tag-display-list" class="tag-display-list"></ul>
                             </div>
                             <div id="tags-hidden-container"></div>
+                            <!-- Hidden tags input for form submission -->
+                            <input type="hidden" name="tags[]" id="tags-hidden-input">
                         </div>
                         <div class="editor-form-group">
                             <div class="tools">
@@ -98,65 +123,9 @@
                 </div>
             </div>
             <div class="editor-right">
-                <h1>yes</h1>
+                <h1></h1>
             </div>
         </div>
     </div>
 @endsection
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('tag-input');
-    const addBtn = document.getElementById('add-tag-btn');
-    const list = document.getElementById('tag-display-list');
-    const hiddenContainer = document.getElementById('tags-hidden-container');
-    let idCounter = 0;
-
-    function addTag(text) {
-        text = (text || '').trim();
-        if (!text) return;
-        // prevent duplicates
-        const existing = Array.from(hiddenContainer.querySelectorAll('input[name="tags[]"]')).some(i => i.value === text);
-        if (existing) { input.value = ''; return; }
-
-        const id = 'tag-' + (++idCounter);
-
-        const li = document.createElement('li');
-        li.dataset.id = id;
-        const span = document.createElement('span');
-        span.textContent = text;
-        li.appendChild(span);
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'remove-tag-btn';
-        btn.setAttribute('aria-label', 'Remove tag');
-        btn.textContent = '×';
-        btn.addEventListener('click', function () { removeTag(id); });
-        li.appendChild(btn);
-
-        list.appendChild(li);
-
-        const hidden = document.createElement('input');
-        hidden.type = 'hidden';
-        hidden.name = 'tags[]';
-        hidden.value = text;
-        hidden.id = 'hidden-' + id;
-        hidden.dataset.id = id;
-        hiddenContainer.appendChild(hidden);
-
-        input.value = '';
-        input.focus();
-    }
-
-    function removeTag(id) {
-        const li = list.querySelector('li[data-id="' + id + '"]');
-        if (li) li.remove();
-        const hidden = hiddenContainer.querySelector('input[data-id="' + id + '"]');
-        if (hidden) hidden.remove();
-    }
-
-    addBtn.addEventListener('click', function () { addTag(input.value); });
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); } });
-});
-</script>

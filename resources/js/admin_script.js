@@ -83,27 +83,31 @@ document.addEventListener('DOMContentLoaded', function () {
   const removeBtn = box.querySelector('.remove-image');
   const placeholder = box.querySelector('.placeholder');
 
-  function setPreview(src){
-    if(src){
-      box.style.backgroundImage = `url(${src})`;
-      placeholder.style.display = 'none';
-      removeBtn.style.display = '';
-    } else {
-      box.style.backgroundImage = '';
-      placeholder.style.display = '';
-      removeBtn.style.display = 'none';
-    }
-  }
+	function setPreview(src){
+		if(src){
+			box.style.backgroundImage = `url(${src})`;
+			placeholder.style.display = 'none';
+			removeBtn.style.display = '';
+		} else {
+			box.style.backgroundImage = '';
+			placeholder.style.display = '';
+			removeBtn.style.display = 'none';
+		}
+	}
 
-  function handleFiles(files){
-    if(!files || !files[0]) return;
-    const file = files[0];
-    if(!file.type.startsWith('image/')) return alert('Please select an image.');
-    const reader = new FileReader();
-    reader.onload = e => setPreview(e.target.result);
-    reader.readAsDataURL(file);
-    // TODO: upload file to server via fetch/FormData if desired
-  }
+	function handleFiles(files){
+		if(!files || !files[0]) return;
+		const file = files[0];
+		if(!file.type.startsWith('image/')) return alert('Please select an image.');
+		const reader = new FileReader();
+		reader.onload = e => setPreview(e.target.result);
+		reader.readAsDataURL(file);
+		// Set the file to the input for form submission
+		// Create a DataTransfer to assign the file to the input
+		const dt = new DataTransfer();
+		dt.items.add(file);
+		input.files = dt.files;
+	}
 
   box.addEventListener('click', ()=> input.click());
   input.addEventListener('change', ()=> handleFiles(input.files));
@@ -120,16 +124,29 @@ document.addEventListener('DOMContentLoaded', function () {
       box.classList.remove('dragover');
     });
   });
-  box.addEventListener('drop', e=>{
-    const dt = e.dataTransfer;
-    if(dt && dt.files && dt.files.length) handleFiles(dt.files);
-  });
+	box.addEventListener('drop', e=>{
+		const dt = e.dataTransfer;
+		if(dt && dt.files && dt.files.length) handleFiles(dt.files);
+	});
 
   removeBtn.addEventListener('click', e=>{
     e.stopPropagation();
     input.value = '';
     setPreview(null);
   });
+	// Debug: log input status before form submit
+	const form = input.closest('form');
+	if (form) {
+		form.addEventListener('submit', function(e) {
+			console.log('Submitting form...');
+			console.log('Input present in form:', form.contains(input));
+			console.log('Input files:', input.files);
+			if (input.files.length === 0 && input.value === '') {
+				// No file selected, allow submit
+				return;
+			}
+		});
+	}
 })();
 
 (function(){
@@ -468,3 +485,59 @@ document.addEventListener('DOMContentLoaded', function () {
 	// set initial content if any (existing server-side drafts)
 	if(hiddenContent && hiddenContent.value){ editor.innerHTML = hiddenContent.value; }
 })();
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('tag-input');
+    const addBtn = document.getElementById('add-tag-btn');
+    const list = document.getElementById('tag-display-list');
+    const hiddenContainer = document.getElementById('tags-hidden-container');
+    let idCounter = 0;
+
+    function addTag(text) {
+        text = (text || '').trim();
+        if (!text) return;
+        // prevent duplicates
+        const existing = Array.from(hiddenContainer.querySelectorAll('input[name="tags[]"]')).some(i => i.value === text);
+        if (existing) { input.value = ''; return; }
+
+        const id = 'tag-' + (++idCounter);
+
+        const li = document.createElement('li');
+        li.dataset.id = id;
+        const span = document.createElement('span');
+        span.textContent = text;
+        li.appendChild(span);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'remove-tag-btn';
+        btn.setAttribute('aria-label', 'Remove tag');
+        btn.textContent = '×';
+        btn.addEventListener('click', function () { removeTag(id); });
+        li.appendChild(btn);
+
+        list.appendChild(li);
+
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'tags[]';
+        hidden.value = text;
+        hidden.id = 'hidden-' + id;
+        hidden.dataset.id = id;
+        hiddenContainer.appendChild(hidden);
+
+        input.value = '';
+        input.focus();
+    }
+
+    function removeTag(id) {
+        const li = list.querySelector('li[data-id="' + id + '"]');
+        if (li) li.remove();
+        const hidden = hiddenContainer.querySelector('input[data-id="' + id + '"]');
+        if (hidden) hidden.remove();
+    }
+
+    addBtn.addEventListener('click', function () { addTag(input.value); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); } });
+});

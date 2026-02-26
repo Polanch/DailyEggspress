@@ -95,10 +95,13 @@
                     <img src="/images/top1.png" class="top-icn">
                     <span class="btn-text">View Website</span>
                 </a>
-                <a class="top-btn t2" href="" aria-label="Sign Out">
+                <a class="top-btn t2" href="#" aria-label="Sign Out" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                     <img src="/images/top2.png" class="top-icn">
                     <span class="btn-text">Sign Out</span>
                 </a>
+                <form id="admin-logout-form" action="/logout" method="POST" style="display:none;">
+                    @csrf
+                </form>
             </div>
         </div>
         <div class="content-body">

@@ -8,31 +8,109 @@
     @vite('resources/css/welcome_style.css')
 </head>
 <body>
-    <div class="the-header">
-        <div class="logo-container">
-            <div class="logo-box">
-                <span class="egg">
-                    <img src="/images/eggleft.png" id="e-left">
-                    <img src="/images/adminchick.png" id="chick">
-                    <img src="/images/eggright.png" id="e-right">
-                </span>
-                <span class="title-logo">
-                    <div class="egg-crack">
-                        <img src="/images/eggleft.png" id="egg-crack-left">
-                        <img src="/images/eggright.png" id="egg-crack-right">
-                    </div>
-                    <h1>myBL&nbsp;&nbsp;G</h1>
-                    <img src="/images/yolk.png" id="yolk">
-                    <p>The Daily Eggspress</p>
-                </span>
+    <div class="main-container">
+        <div class="the-window">
+            <div class="egg-holder">
+                <div class="egg-box">
+                    <img src="/images/eggleft.png" id="shell-top">
+                    <img src="/images/eggright.png" id="shell-bottom">
+                    <div id="chick"></div>
+                </div>
+            </div>
+            <div class="text-box">
+                <h1>myBL<img src="/images/yolk2.png" id="yolk">G</h1>
+            </div>
+            <div class="p-box">
+                <p>the Daily Eggspress</p>
+            </div>
+            <div class="tagline">
+                <p>"Fresh Thoughts Delivered Daily"</p>
+            </div>
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <img src="/images/feather.png" alt="Feather">
+            <div class="footer">
+                <p>All Rights Reserved &copy;</p>
+                <p>Developed by John Lloyd Olipani</p>
             </div>
         </div>
+        <div class="the-forms">
+            <div class="form-slider">
+                <form class="login-form" action="/login" method="post">
+                    <h1>Welcome to the Coop</h1>
+                    @csrf
+                    <label for="login-email">Email or Username</label>
+                    <div class="input-icon">
+                        <span class="icon-envelope"><img src="/images/l1.png" class="log-icn"></span>
+                        <input id="login-email" type="text" name="email" placeholder="Enter your email or username" required>
+                    </div>
+                    <label for="login-password">Password</label>
+                    <div class="input-icon">
+                        <span class="icon-lock"><img src="/images/l2.png" class="log-icn"></span>
+                        <input id="login-password" type="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-row" style="margin-bottom: 10px; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox" id="remember" name="remember" style="width:16px;height:16px;margin-right:6px;">
+                            <label for="remember" style="font-size:0.98rem; color:#23130B; cursor:pointer;">Keep me logged in</label>
+                        </div>
+                        <a href="#" style="font-size:0.98rem; color:#9C6D55; text-decoration:none; margin-left:10px;">Forgot password?</a>
+                    </div>
+                    @if(session('error'))
+                        <div class="form-error">{{ session('error') }}</div>
+                    @endif
+                    <button type="submit">Login</button>
+                    <div class="form-link">
+                        <a href="#" id="show-register">Don't have an account? Create Account</a>
+                    </div>
+                </form>
+                <!-- Register Form -->
+                <form class="register-form" action="/register" method="post" style="display:none;">
+                    @csrf
+                    <h1>Incubator</h1>
+                    <label for="reg-username">Username</label>
+                    <input id="reg-username" type="text" name="username" placeholder="Username" required>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="reg-first-name">First Name</label>
+                            <input id="reg-first-name" type="text" name="first_name" placeholder="First Name" required>
+                        </div>
+                        <div class="form-col">
+                            <label for="reg-last-name">Last Name</label>
+                            <input id="reg-last-name" type="text" name="last_name" placeholder="Last Name" required>
+                        </div>
+                    </div>
+                    <label for="reg-birthday">Birthday</label>
+                    <input id="reg-birthday" type="date" name="birthday" required>
+                    <label for="reg-email">Email</label>
+                    <input id="reg-email" type="email" name="email" placeholder="Email" required>
+                    <label for="reg-password">Password</label>
+                    <input id="reg-password" type="password" name="password" placeholder="Password" required>
+                    <label for="reg-password-confirm">Confirm Password</label>
+                    <input id="reg-password-confirm" type="password" name="password_confirmation" placeholder="Confirm Password" required>
+                    <input type="hidden" name="role" value="user">
+                    @if(session('success'))
+                        <div class="form-success">{{ session('success') }}</div>
+                    @endif
+                    <button type="submit">Create Account</button>
+                    <div class="form-link">
+                        <a href="#" id="show-login">Already have an account? Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="new-footer">
+            <p>All Rights Reserved &copy;</p>
+            <p>Developed by John Lloyd Olipani</p>
+        </div>
     </div>
-    <div class="the-content">
-        
-        <div class="log-window"></div>
-    </div>
-    <div class="the-footer"></div>
     @vite('resources/js/welcome_script.js')
 </body>
 </html>

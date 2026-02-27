@@ -7,9 +7,7 @@ use App\Http\Controllers\BlogController;
 Route::get('/', [LoginController::class, 'showLogin'])->name('login');
 Route::get('/login', [LoginController::class, 'showLogin']);
 
-Route::get('/home', function () {
-    return view('main');
-});
+Route::get('/home', [BlogController::class, 'showHome']);
 
 
 Route::post('/login', [LoginController::class, 'login']);
@@ -46,3 +44,13 @@ Route::post('/email/resend', [App\Http\Controllers\LoginController::class, 'rese
     ->name('verification.resend');
 
 Route::post('/admin/blogs', [BlogController::class, 'store'])->middleware('auth')->name('blogs.store');
+
+Route::post('/blog-image-upload', [BlogController::class, 'uploadImage'])->middleware('checkRole:admin')->name('blog.image.upload');
+Route::post('/remove-image', [BlogController::class, 'removeImage'])->middleware('checkRole:admin')->name('remove-image');
+
+Route::get('/forgot-password', [App\Http\Controllers\LoginController::class, 'showForgotPassword'])->name('password.forgot.form');
+Route::post('/forgot-password/send-otp', [App\Http\Controllers\LoginController::class, 'sendOtp'])->name('password.otp.send');
+Route::get('/forgot-password/verify-otp', [App\Http\Controllers\LoginController::class, 'showVerifyOtp'])->name('password.otp.verify.form');
+Route::post('/forgot-password/verify-otp', [App\Http\Controllers\LoginController::class, 'verifyOtp'])->name('password.otp.verify');
+Route::get('/forgot-password/reset', [App\Http\Controllers\LoginController::class, 'showResetPassword'])->name('password.reset.form');
+Route::post('/forgot-password/reset', [App\Http\Controllers\LoginController::class, 'resetPassword'])->name('password.reset');

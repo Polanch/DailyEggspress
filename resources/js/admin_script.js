@@ -1,3 +1,23 @@
+// Helper to get CSRF token from meta tag
+function getCsrfToken() {
+	const token = document.querySelector('meta[name="csrf-token"]');
+	return token ? token.getAttribute('content') : '';
+}
+// Example usage for image upload fetch
+function uploadBlogImage(formData) {
+	return fetch('/blog-image-upload', {
+		method: 'POST',
+		headers: {
+			'X-CSRF-TOKEN': getCsrfToken()
+		},
+		body: formData,
+		credentials: 'same-origin' // Ensure cookies/session are sent
+	});
+}
+
+// Replace your fetch('/blog-image-upload', ...) calls with uploadBlogImage(formData)
+// and ensure your HTML <head> includes:
+// <meta name="csrf-token" content="{{ csrf_token() }}">
 document.addEventListener('DOMContentLoaded', function () {
 	const menuBtn = document.querySelector('.menu-btn');
 	if (!menuBtn) return;
@@ -77,11 +97,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 });
 
+
 (function(){
-  const box = document.getElementById('dropImageBox');
-  const input = document.getElementById('dropImageInput');
-  const removeBtn = box.querySelector('.remove-image');
-  const placeholder = box.querySelector('.placeholder');
+	const box = document.getElementById('dropImageBox');
+	if (!box) return; // Only run this block if the image box exists (i.e., on create blog page)
+	const input = document.getElementById('dropImageInput');
+	const removeBtn = box.querySelector('.remove-image');
+	const placeholder = box.querySelector('.placeholder');
 
 	function setPreview(src){
 		if(src){
@@ -377,7 +399,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		// removed manual width input: sizing is done by dragging the handle
 
-		removeBtn.addEventListener('click', function(e){ e.stopPropagation(); wrapper.remove(); });
+		removeBtn.addEventListener('click', function(e) {
+			e.stopPropagation();
+			const wrapper = removeBtn.closest('.img-wrapper');
+			if (!wrapper) return;
+			const filename = wrapper.dataset.filename;
+			if (filename) {
+				fetch('/remove-image', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-TOKEN': getCsrfToken()
+					},
+					body: JSON.stringify({ filename })
+				})
+				.then(res => res.json())
+				.then(data => {
+					if (data.success) {
+						wrapper.remove();
+					} else {
+						alert('Failed to delete image: ' + (data.message || 'Unknown error'));
+					}
+				})
+				.catch(() => alert('Failed to delete image.'));
+			} else {
+				wrapper.remove();
+			}
+		});
 
 		// resize by dragging handle
 		let dragging = false, startX = 0, startW = 0;
@@ -390,15 +438,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// wrap images inserted by file input, and attach controls
 	if(t4 && imageInput){ t4.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); imageInput.click(); });
-		imageInput.addEventListener('change', function(){ const f = this.files && this.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = function(ev){
-				editor.focus();
-				// insert wrapped image HTML so we can control it
-				const html = '<div class="img-wrapper flow-none" contenteditable="false"><img src="'+ev.target.result+'" alt="image"></div><p><br></p>';
-				try{ document.execCommand('insertHTML', false, html); }
-				catch(err){ const rng = document.createRange(); rng.selectNodeContents(editor); rng.collapse(false); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rng); document.execCommand('insertHTML', false, html); }
-				// attach controls to the newly inserted wrapper
-				setTimeout(()=>{ const wrappers = editor.querySelectorAll('.img-wrapper'); const w = wrappers[wrappers.length-1]; if(w) attachImageControls(w); }, 0);
-			}; reader.readAsDataURL(f); this.value=''; }); }
+		imageInput.addEventListener('change', function(){
+			const f = this.files && this.files[0];
+			if(!f) return;
+			const formData = new FormData();
+			formData.append('image', f);
+			// CSRF token for Laravel
+			const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+			fetch('/blog-image-upload', {
+				method: 'POST',
+				headers: token ? { 'X-CSRF-TOKEN': token } : {},
+				body: formData
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data.url){
+					editor.focus();
+					const html = `<div class="img-wrapper flow-none" contenteditable="false" data-filename="${data.filename}"><img src="${data.url}" alt="image"></div><p><br></p>`;
+					try{ document.execCommand('insertHTML', false, html); }
+					catch(err){
+						const rng = document.createRange(); rng.selectNodeContents(editor); rng.collapse(false);
+						const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rng);
+						document.execCommand('insertHTML', false, html);
+					}
+					setTimeout(()=>{
+						const wrappers = editor.querySelectorAll('.img-wrapper');
+						const w = wrappers[wrappers.length-1];
+						if(w) attachImageControls(w);
+					}, 0);
+				} else {
+					alert('Image upload failed.');
+				}
+			})
+			.catch(()=>{ alert('Image upload failed.'); });
+			this.value='';
+		});
+	}
 
 	// helper: set caret position immediately after a node
 	function setCaretAfter(node){
@@ -538,6 +613,151 @@ document.addEventListener('DOMContentLoaded', function () {
         if (hidden) hidden.remove();
     }
 
-    addBtn.addEventListener('click', function () { addTag(input.value); });
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); } });
+	if (typeof addBtn !== 'undefined' && addBtn) {
+		addBtn.addEventListener('click', function () { addTag(input.value); });
+	}
+	if (typeof input !== 'undefined' && input) {
+		input.addEventListener('keydown', function (e) {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				addTag(input.value);
+			}
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	console.log('admin_script.js loaded');
+	// Use the blog editor form by id for reliable targeting
+	const form = document.getElementById('blog-editor-form');
+	console.log('Form found:', form);
+	if (!form) return;
+	let hasUnsaved = false;
+
+	// Listen for changes in title input
+	const titleInput = form.querySelector('[name="title"]');
+	if (titleInput) {
+		titleInput.addEventListener('input', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Title changed, hasUnsaved set to true');
+			}
+		});
+	}
+
+    // Listen for changes in textarea (hidden content)
+    const contentTextarea = form.querySelector('[name="content"]');
+	if (contentTextarea) {
+		contentTextarea.addEventListener('input', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Content textarea changed, hasUnsaved set to true');
+			}
+		});
+	}
+
+    // Listen for changes in contenteditable editor
+    const editorDiv = document.getElementById('editor');
+	if (editorDiv) {
+		editorDiv.addEventListener('input', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Editor input, hasUnsaved set to true');
+			}
+		});
+		editorDiv.addEventListener('keyup', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Editor keyup, hasUnsaved set to true');
+			}
+		});
+	}
+
+    // Listen for tag changes
+	document.getElementById('add-tag-btn')?.addEventListener('click', function() {
+		if (!hasUnsaved) {
+			hasUnsaved = true;
+			console.log('Tag added, hasUnsaved set to true');
+		}
+	});
+	document.getElementById('tag-input')?.addEventListener('input', function() {
+		if (!hasUnsaved) {
+			hasUnsaved = true;
+			console.log('Tag input changed, hasUnsaved set to true');
+		}
+	});
+
+    // Listen for image changes (thumbnail upload)
+    const dropImageInput = document.getElementById('dropImageInput');
+	if (dropImageInput) {
+		dropImageInput.addEventListener('change', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Image input changed, hasUnsaved set to true');
+			}
+		});
+	}
+    // Listen for image removal
+    const removeImageBtn = document.querySelector('.remove-image');
+	if (removeImageBtn) {
+		removeImageBtn.addEventListener('click', function() {
+			if (!hasUnsaved) {
+				hasUnsaved = true;
+				console.log('Image removed, hasUnsaved set to true');
+			}
+		});
+	}
+
+    // Listen for manual input on the form (fallback)
+	form.addEventListener('input', function () {
+		if (!hasUnsaved) {
+			hasUnsaved = true;
+			console.log('Form input, hasUnsaved set to true');
+		}
+	});
+
+    // Reset hasUnsaved on form submit
+
+	let isSubmitting = false;
+
+	// Also set isSubmitting to true on click of submit buttons, with a short timeout to ensure it is set before beforeunload
+	const draftBtn = form.querySelector('button[name="action"][value="Draft"]');
+	const publishBtn = form.querySelector('button[name="action"][value="Published"]');
+	function removeBeforeUnload() {
+		window.removeEventListener('beforeunload', beforeUnloadHandler);
+	}
+	if (draftBtn) {
+		draftBtn.addEventListener('click', function() {
+			hasUnsaved = false;
+			removeBeforeUnload();
+			isSubmitting = true;
+			console.log('Draft button clicked, hasUnsaved = false, isSubmitting = true');
+		});
+	}
+	if (publishBtn) {
+		publishBtn.addEventListener('click', function() {
+			hasUnsaved = false;
+			removeBeforeUnload();
+			isSubmitting = true;
+			console.log('Publish button clicked, hasUnsaved = false, isSubmitting = true');
+		});
+	}
+	form.addEventListener('submit', function() {
+		hasUnsaved = false;
+		removeBeforeUnload();
+		isSubmitting = true;
+		console.log('Form submitted, hasUnsaved set to false, isSubmitting = true');
+	});
+
+    // Confirmation dialog on page unload/navigation
+	function beforeUnloadHandler(e) {
+		if (hasUnsaved && !isSubmitting) {
+			console.log('beforeunload triggered, hasUnsaved = true');
+			const message = 'You have unsaved changes. Your draft will be lost if you leave this page.';
+			e.preventDefault();
+			e.returnValue = message;
+			return message;
+		}
+	}
+	window.addEventListener('beforeunload', beforeUnloadHandler);
 });

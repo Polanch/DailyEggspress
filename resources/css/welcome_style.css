@@ -247,6 +247,8 @@ F0DED2
     overflow: hidden;
     padding: 15px;
     z-index: 3;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .form-slider h1{
@@ -537,13 +539,13 @@ F0DED2
     }
 
     .egg-holder{
-        width: 100px;
+        width: 200px;
         height: 100px;
     }
 
     .egg-box{
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
     
     @keyframes eggmove{
@@ -551,7 +553,7 @@ F0DED2
             transform: translateX(0);
         }
         100%{
-            transform: translateX(-130%);
+            transform: translateX(-90%);
         }
     }
 
@@ -589,3 +591,4 @@ F0DED2
         align-self: flex-start;
     }
 }
+

@@ -32,7 +32,7 @@
         <div class="workspace-editor">
             <div class="editor-left">
                 <div class="editor-form-window">
-                    <form action="{{ route('blogs.store') }}" method="post" enctype="multipart/form-data">
+                    <form id="blog-editor-form" action="{{ route('blogs.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="drop-image-box" id="dropImageBox">
                             <input type="file" id="dropImageInput" name="thumbnail" accept="image/*" style="display:none">
@@ -123,9 +123,53 @@
                 </div>
             </div>
             <div class="editor-right">
-                <h1></h1>
+                <span class="draft-list-header">
+                    <p>Saved Drafts</p>
+                    <p>({{ \App\Models\Blog::where('blog_status', 'draft')->count() }})</p>
+                    <span class="filter-drafts">
+                        <select id="draft-sort-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="az">Title A-Z</option>
+                            <option value="za">Title Z-A</option>
+                        </select>
+                    </span>
+                </span>
+                <div class="draft-search-bar">
+                    <input type="text" id="draft-search-input" placeholder="Search Drafts...">
+                    <button id="draft-search-btn"><img src="/images/search2.png" class="d-search"></button>
+                </div>
+                <ul class="draft-list">
+                    @php
+                        $drafts = \App\Models\Blog::where('blog_status', 'draft')->orderBy('created_at', 'desc')->get();
+                    @endphp
+                    @forelse ($drafts as $draft)
+                        <li>
+                            <div class="draft-thumbnail">
+                                @if ($draft->thumbnail && file_exists(public_path('storage/' . $draft->thumbnail)))
+                                    <img src="{{ asset('storage/' . $draft->thumbnail) }}" alt="Draft Thumbnail" class="draft-thumb-img">
+                                @else
+                                    <img src="/images/empty.png" alt="Draft Thumbnail" class="draft-thumb-img">
+                                @endif
+                            </div>
+                            <div class="draft-info">
+                                <p>{{ $draft->blog_title }}</p>
+                                <p>{{ $draft->created_at->format('M d, Y') }}</p>
+                                <div class="draft-btn-holder">
+                                   <button type="button" class="draft-action-btn">
+                                        <img src="/images/t9.png" alt="">
+                                    </button> 
+                                    
+                                </div>
+                            </div>
+                        </li>
+                    @empty
+                        <li style="text-align:center; color:#888; padding:20px;">No drafts found.</li>
+                    @endforelse
+                </ul>
             </div>
         </div>
+        
     </div>
 @endsection
 

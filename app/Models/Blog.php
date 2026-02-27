@@ -15,6 +15,7 @@ class Blog extends Model
         'tags',
         'blog_title',
         'blog_content',
+        'blog_status',
     ];
 
     protected $casts = [

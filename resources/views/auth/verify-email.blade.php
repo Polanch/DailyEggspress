@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Email</title>
-    <link rel="stylesheet" href="/css/welcome_style.css">
-</head>
-<body>
+@extends('layouts.security_layout')
+@section('content')
     <div class="main-container">
         <div class="the-window">
             <div class="text-box">
@@ -34,5 +27,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

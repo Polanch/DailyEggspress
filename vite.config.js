@@ -15,6 +15,10 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        host: 'dailyeggspress.local',
+        port: 5173,
+        strictPort: true,
+        allowedHosts: ['dailyeggspress.local'],
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

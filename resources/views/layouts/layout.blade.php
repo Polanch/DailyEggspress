@@ -36,8 +36,8 @@
                 </button>
             </div>
             <div class="sign-box">
-                <button class="sign-btn">Sign In</button>
-                <button class="sign-btn">Register</button>
+                <button type="button" class="sign-btn" onclick="window.location.href='{{ url('/login') }}'">Sign In</button>
+                <button type="button" class="sign-btn" onclick="window.location.href='{{ url('/login?form=register') }}'">Register</button>
                 <button class="condensed-sign"><img src="/images/user.png" id="user-icn"></button>
             </div>
             <div class="condensed-sign-window">
@@ -47,8 +47,8 @@
                 </div>
                 <div class="cs-2">
                     <p>Don't have an account?</p>
-                    <button id="cs-register-btn">Register</button>
-                    <button id="cs-signin-btn">Sign In</button>
+                    <button id="cs-register-btn" type="button" onclick="window.location.href='{{ url('/login?form=register') }}'">Register</button>
+                    <button id="cs-signin-btn" type="button" onclick="window.location.href='{{ url('/login') }}'">Sign In</button>
                 </div>
             </div>
         </div>

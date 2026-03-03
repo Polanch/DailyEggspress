@@ -52,25 +52,25 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/">
+                    <a href="/admin/comments">
                         <img src="/images/menu3.png" class="admin-menu-icn">
                         <p>Comments</p>
                     </a>
                 </li>
                 <li>
-                    <a href="/">
+                    <a href="/admin/posts">
                         <img src="/images/menu4.png" class="admin-menu-icn">
                         <p>Posts</p>
                     </a>
                 </li>
                 <li>
-                    <a href="/">
+                    <a href="/admin/trash">
                         <img src="/images/menu5.png" class="admin-menu-icn">
-                        <p>Gallery</p>
+                        <p>Trash</p>
                     </a>
                 </li>
                 <li>
-                    <a href="/">
+                    <a href="/admin/users">
                         <img src="/images/menu6.png" class="admin-menu-icn">
                         <p>Users</p>
                     </a>

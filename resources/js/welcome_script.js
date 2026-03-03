@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
+	// Auto-dismiss alerts after 2 seconds
+	var alerts = document.querySelectorAll('.alert, .alert-success, .alert-error, .alert-danger, .appeal-alert');
+	alerts.forEach(function(alert) {
+		setTimeout(function() {
+			alert.style.transition = 'opacity 0.25s ease';
+			alert.style.opacity = '0';
+			setTimeout(function() {
+				alert.style.display = 'none';
+			}, 250);
+		}, 2000);
+	});
+
 	const showRegister = document.getElementById('show-register');
 	const showLogin = document.getElementById('show-login');
 	const loginForm = document.querySelector('.login-form');

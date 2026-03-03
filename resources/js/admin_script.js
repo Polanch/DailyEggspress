@@ -19,6 +19,18 @@ function uploadBlogImage(formData) {
 // and ensure your HTML <head> includes:
 // <meta name="csrf-token" content="{{ csrf_token() }}">
 document.addEventListener('DOMContentLoaded', function () {
+	// Auto-dismiss alerts after 2 seconds
+	var alerts = document.querySelectorAll('.alert, .trash-alert, .posts-alert, .appeal-alert, .alert-success, .alert-error, .alert-danger');
+	alerts.forEach(function(alert) {
+		setTimeout(function() {
+			alert.style.transition = 'opacity 0.25s ease';
+			alert.style.opacity = '0';
+			setTimeout(function() {
+				alert.style.display = 'none';
+			}, 250);
+		}, 2000);
+	});
+
 	const menuBtn = document.querySelector('.menu-btn');
 	if (!menuBtn) return;
 
@@ -53,45 +65,44 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 });
 
+// Tab option selection with animation
 document.addEventListener('DOMContentLoaded', function () {
-	const options = document.querySelectorAll('.t-option');
-	if (!options || options.length === 0) return;
-
-	options.forEach(btn => {
-		btn.addEventListener('click', function () {
-			options.forEach(b => b.classList.remove('active'));
-			this.classList.add('active');
-		});
-	});
-});
-
- document.addEventListener('DOMContentLoaded', function () {
+	const tBox = document.querySelector('.t-box');
 	const options = Array.from(document.querySelectorAll('.t-option'));
-	if (!options.length) return;
+	if (!options.length || !tBox) return;
+
+	// Disable transitions initially
+	tBox.classList.add('no-animation');
+	
+	// Enable transitions after a short delay
+	setTimeout(() => {
+		tBox.classList.remove('no-animation');
+	}, 100);
 
 	options.forEach(btn => {
 		btn.addEventListener('click', function () {
-			const current = document.querySelector('.t-option.active');
 			const clicked = this;
+			const current = options.find(opt => opt.classList.contains('active'));
+			
+			// If clicking the same button, do nothing
 			if (current === clicked) return;
-
-			// animate exit on current active
+			
+			// Clear all exiting classes
+			options.forEach(opt => opt.classList.remove('exiting'));
+			
+			// If there's a currently active button, remove it and mark as exiting
 			if (current) {
-				// add exiting class to trigger slide-out
 				current.classList.add('exiting');
-
-				const onAnimEnd = (e) => {
-					// wait for our underline-out animation
-					if (e.animationName === 'underline-out') {
-						current.classList.remove('active', 'exiting');
-						current.removeEventListener('animationend', onAnimEnd);
-					}
-				};
-
-				current.addEventListener('animationend', onAnimEnd);
+				current.classList.remove('active');
+				
+				// Remove exiting class after transition completes
+				setTimeout(() => {
+					current.classList.remove('exiting');
+				}, 300);
 			}
-
-			// add active to clicked (will trigger slide-in)
+			
+			// Add active class to clicked button
+			clicked.classList.remove('exiting');
 			clicked.classList.add('active');
 		});
 	});
@@ -104,12 +115,17 @@ document.addEventListener('DOMContentLoaded', function () {
 	const input = document.getElementById('dropImageInput');
 	const removeBtn = box.querySelector('.remove-image');
 	const placeholder = box.querySelector('.placeholder');
+	const oldThumbnailInput = document.getElementById('old-thumbnail');
+	let currentThumbnailPath = null; // Track the current thumbnail for deletion
 
 	function setPreview(src){
 		if(src){
-			box.style.backgroundImage = `url(${src})`;
+			box.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${src})`;
+			box.style.backgroundSize = 'cover';
+			box.style.backgroundPosition = 'center';
 			placeholder.style.display = 'none';
 			removeBtn.style.display = '';
+			removeBtn.textContent = 'Change Image';
 		} else {
 			box.style.backgroundImage = '';
 			placeholder.style.display = '';
@@ -122,7 +138,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		const file = files[0];
 		if(!file.type.startsWith('image/')) return alert('Please select an image.');
 		const reader = new FileReader();
-		reader.onload = e => setPreview(e.target.result);
+		reader.onload = e => {
+			setPreview(e.target.result);
+			// If there's a current thumbnail, mark it for deletion
+			if(currentThumbnailPath && oldThumbnailInput){
+				oldThumbnailInput.value = currentThumbnailPath;
+			}
+		};
 		reader.readAsDataURL(file);
 		// Set the file to the input for form submission
 		// Create a DataTransfer to assign the file to the input
@@ -153,8 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   removeBtn.addEventListener('click', e=>{
     e.stopPropagation();
-    input.value = '';
-    setPreview(null);
+    input.click();
   });
 	// Debug: log input status before form submit
 	const form = input.closest('form');
@@ -169,6 +190,11 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		});
 	}
+
+	// Expose setter for edit mode
+	window.setCurrentThumbnailPath = function(path) {
+		currentThumbnailPath = path;
+	};
 })();
 
 (function(){
@@ -272,10 +298,155 @@ document.addEventListener('DOMContentLoaded', function () {
 	const boldBtn = document.getElementById('bold-btn'); if(boldBtn) boldBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('bold'); });
 	const italicBtn = document.getElementById('italic-btn'); if(italicBtn) italicBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('italic'); });
 	const underlineBtn = document.getElementById('underline-btn'); if(underlineBtn) underlineBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('underline'); });
-	const justifyLeftBtn = document.getElementById('justify-left-btn'); if(justifyLeftBtn) justifyLeftBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('justifyLeft'); });
-	const justifyCenterBtn = document.getElementById('justify-center-btn'); if(justifyCenterBtn) justifyCenterBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('justifyCenter'); });
-	const justifyRightBtn = document.getElementById('justify-right-btn'); if(justifyRightBtn) justifyRightBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('justifyRight'); });
-	const justifyFullBtn = document.getElementById('justify-full-btn'); if(justifyFullBtn) justifyFullBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('justifyFull'); });
+	
+	// Helper function to apply text alignment (works in tables too)
+	function applyTextAlign(alignment) {
+		const sel = window.getSelection();
+		if(!sel.rangeCount) return;
+		
+		// Find if cursor is inside a table cell
+		let node = sel.anchorNode;
+		let cell = null;
+		
+		while(node && node !== editor) {
+			if(node.nodeType === 1 && (node.tagName === 'TD' || node.tagName === 'TH')) {
+				cell = node;
+				break;
+			}
+			node = node.parentNode;
+		}
+		
+		if(cell) {
+			// Apply alignment to the table cell
+			cell.style.textAlign = alignment;
+			editor.focus();
+		} else {
+			// Apply to paragraph/div using execCommand
+			const commands = {
+				'left': 'justifyLeft',
+				'center': 'justifyCenter',
+				'right': 'justifyRight',
+				'justify': 'justifyFull'
+			};
+			exec(commands[alignment]);
+		}
+	}
+	
+	const justifyLeftBtn = document.getElementById('justify-left-btn'); 
+	if(justifyLeftBtn) justifyLeftBtn.addEventListener('click', function(e){ 
+		e.preventDefault(); 
+		e.stopPropagation(); 
+		applyTextAlign('left'); 
+	});
+	
+	const justifyCenterBtn = document.getElementById('justify-center-btn'); 
+	if(justifyCenterBtn) justifyCenterBtn.addEventListener('click', function(e){ 
+		e.preventDefault(); 
+		e.stopPropagation(); 
+		applyTextAlign('center'); 
+	});
+	
+	const justifyRightBtn = document.getElementById('justify-right-btn'); 
+	if(justifyRightBtn) justifyRightBtn.addEventListener('click', function(e){ 
+		e.preventDefault(); 
+		e.stopPropagation(); 
+		applyTextAlign('right'); 
+	});
+	
+	const justifyFullBtn = document.getElementById('justify-full-btn'); 
+	if(justifyFullBtn) justifyFullBtn.addEventListener('click', function(e){ 
+		e.preventDefault(); 
+		e.stopPropagation(); 
+		applyTextAlign('justify'); 
+	});
+
+	// Font size increase/decrease
+	const fontSizes = [12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]; // Standard document font sizes
+	
+	const fontSizeIncreaseBtn = document.getElementById('font-size-increase-btn');
+	const fontSizeDecreaseBtn = document.getElementById('font-size-decrease-btn');
+	
+	if(fontSizeIncreaseBtn) {
+		fontSizeIncreaseBtn.addEventListener('click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			const sel = window.getSelection();
+			if(sel.rangeCount > 0 && !sel.isCollapsed){
+				const range = sel.getRangeAt(0);
+				const span = document.createElement('span');
+				
+				// Get current font size or default to 16
+				const parentElement = range.commonAncestorContainer.parentElement;
+				const currentSize = parseInt(window.getComputedStyle(parentElement).fontSize) || 16;
+				
+				// Find next larger size
+				let newSize = fontSizes.find(size => size > currentSize) || fontSizes[fontSizes.length - 1];
+				
+				span.style.fontSize = newSize + 'px';
+				try{
+					range.surroundContents(span);
+				}catch(err){
+					// Fallback
+					document.execCommand('fontSize', false, '7');
+				}
+			}
+			editor.focus();
+		});
+	}
+	
+	if(fontSizeDecreaseBtn) {
+		fontSizeDecreaseBtn.addEventListener('click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			const sel = window.getSelection();
+			if(sel.rangeCount > 0 && !sel.isCollapsed){
+				const range = sel.getRangeAt(0);
+				const span = document.createElement('span');
+				
+				// Get current font size or default to 16
+				const parentElement = range.commonAncestorContainer.parentElement;
+				const currentSize = parseInt(window.getComputedStyle(parentElement).fontSize) || 16;
+				
+				// Find next smaller size
+				let newSize = fontSizes.slice().reverse().find(size => size < currentSize) || fontSizes[0];
+				
+				span.style.fontSize = newSize + 'px';
+				try{
+					range.surroundContents(span);
+				}catch(err){
+					// Fallback
+					document.execCommand('fontSize', false, '1');
+				}
+			}
+			editor.focus();
+		});
+	}
+
+	// Font family selector
+	const fontFamilySelect = document.getElementById('font-family-select');
+	if(fontFamilySelect) {
+		fontFamilySelect.addEventListener('change', function(e){
+			const fontFamily = this.value;
+			if(fontFamily){
+				editor.focus();
+				const sel = window.getSelection();
+				if(sel.rangeCount > 0 && !sel.isCollapsed){
+					const range = sel.getRangeAt(0);
+					const span = document.createElement('span');
+					span.style.fontFamily = fontFamily;
+					try{
+						range.surroundContents(span);
+					}catch(err){
+						// Fallback to execCommand
+						document.execCommand('fontName', false, fontFamily);
+					}
+				}
+				editor.focus();
+			}
+			// Reset select to default
+			this.value = '';
+		});
+	}
 
 	// lists: unordered and ordered
 	const t1 = document.getElementById('t1-btn'); if(t1) t1.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); exec('insertUnorderedList'); });
@@ -720,9 +891,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	let isSubmitting = false;
 
+	// Set minimum datetime to now (prevent selecting past dates)
+	const scheduledAtInput = document.getElementById('scheduled_at');
+	const scheduleSection = document.getElementById('schedule-section');
+	
+	function setMinDateTime() {
+		if (scheduledAtInput) {
+			const now = new Date();
+			// Format: YYYY-MM-DDTHH:MM
+			const year = now.getFullYear();
+			const month = String(now.getMonth() + 1).padStart(2, '0');
+			const day = String(now.getDate()).padStart(2, '0');
+			const hours = String(now.getHours()).padStart(2, '0');
+			const minutes = String(now.getMinutes()).padStart(2, '0');
+			const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+			scheduledAtInput.setAttribute('min', minDateTime);
+		}
+	}
+	
+	setMinDateTime();
+	// Update min time every minute
+	setInterval(setMinDateTime, 60000);
+
 	// Also set isSubmitting to true on click of submit buttons, with a short timeout to ensure it is set before beforeunload
 	const draftBtn = form.querySelector('button[name="action"][value="Draft"]');
 	const publishBtn = form.querySelector('button[name="action"][value="Published"]');
+	const scheduleBtn = form.querySelector('button[name="action"][value="Scheduled"]');
 	function removeBeforeUnload() {
 		window.removeEventListener('beforeunload', beforeUnloadHandler);
 	}
@@ -740,6 +934,30 @@ document.addEventListener('DOMContentLoaded', function () {
 			removeBeforeUnload();
 			isSubmitting = true;
 			console.log('Publish button clicked, hasUnsaved = false, isSubmitting = true');
+		});
+	}
+	if (scheduleBtn) {
+		scheduleBtn.addEventListener('click', function(e) {
+			const scheduledAtInput = document.getElementById('scheduled_at');
+			if (!scheduledAtInput || !scheduledAtInput.value) {
+				e.preventDefault();
+				alert('Please select a date and time to schedule your post.');
+				return false;
+			}
+			
+			// Validate that the selected date is in the future
+			const selectedDate = new Date(scheduledAtInput.value);
+			const now = new Date();
+			if (selectedDate <= now) {
+				e.preventDefault();
+				alert('Please select a future date and time for scheduling.');
+				return false;
+			}
+			
+			hasUnsaved = false;
+			removeBeforeUnload();
+			isSubmitting = true;
+			console.log('Schedule button clicked, hasUnsaved = false, isSubmitting = true');
 		});
 	}
 	form.addEventListener('submit', function() {
@@ -760,4 +978,381 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 	window.addEventListener('beforeunload', beforeUnloadHandler);
+});
+
+document.querySelectorAll('.draft-action-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const options = this.parentElement.querySelector('.delete-options');
+        const isActive = options.classList.contains('active');
+        // Close all delete-options
+        document.querySelectorAll('.delete-options.active').forEach(opt => opt.classList.remove('active'));
+        // Toggle this one
+        if (!isActive) {
+            options.classList.add('active');
+        }
+        // If isActive, it stays closed (toggled off)
+    });
+});
+
+// Close on outside click
+document.addEventListener('click', function() {
+    document.querySelectorAll('.delete-options.active').forEach(opt => opt.classList.remove('active'));
+});
+
+// ===== EDIT DRAFT FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+    const editButtons = document.querySelectorAll('.edit-draft-btn');
+    const form = document.getElementById('blog-editor-form');
+	if (!form) return;
+    const titleInput = form.querySelector('[name="title"]');
+    const contentTextarea = form.querySelector('[name="content"]');
+    const editor = document.getElementById('editor');
+    const tagInput = document.getElementById('tag-input');
+    const dropImageBox = document.getElementById('dropImageBox');
+    const tagDisplayList = document.getElementById('tag-display-list');
+    const tagsHiddenContainer = document.getElementById('tags-hidden-container');
+    const headerSpan = document.getElementById('hh');
+    const subheaderLabel = document.getElementById('form-mode-label');
+    const draftBtn = form.querySelector('button[name="action"][value="Draft"]');
+    const publishBtn = form.querySelector('button[name="action"][value="Published"]');
+    const scheduleBtn = form.querySelector('button[name="action"][value="Scheduled"]');
+    
+    let currentEditingBlogId = null;
+
+    editButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const blogId = this.getAttribute('data-blog-id');
+            loadBlogForEditing(blogId);
+        });
+    });
+
+	const queryParams = new URLSearchParams(window.location.search);
+	const editBlogId = queryParams.get('edit');
+	if (editBlogId) {
+		loadBlogForEditing(editBlogId);
+	}
+
+    function loadBlogForEditing(blogId) {
+        // Fetch blog data via AJAX
+        fetch(`/admin/blogs/${blogId}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load blog');
+            return response.json();
+        })
+        .then(blog => {
+            currentEditingBlogId = blog.id;
+            populateFormWithBlog(blog);
+			switchToEditMode(blog.id, blog.status);
+            scrollToForm();
+        })
+        .catch(error => {
+            console.error('Error loading blog:', error);
+            alert('Failed to load blog. Please try again.');
+        });
+    }
+
+    function populateFormWithBlog(blog) {
+        // Set title
+        titleInput.value = blog.title || '';
+
+        // Set content in editor
+        contentTextarea.value = blog.content || '';
+        editor.innerHTML = blog.content || '';
+
+        // Clear and repopulate tags
+        tagDisplayList.innerHTML = '';
+        tagsHiddenContainer.innerHTML = '';
+        if (blog.tags && Array.isArray(blog.tags) && blog.tags.length > 0) {
+            blog.tags.forEach(tag => {
+                addTagProgrammatically(tag);
+            });
+        }
+
+        // Set scheduled_at if exists
+        const scheduledAtInput = document.getElementById('scheduled_at');
+        if (scheduledAtInput && blog.scheduled_at) {
+            scheduledAtInput.value = blog.scheduled_at;
+        } else if (scheduledAtInput) {
+            scheduledAtInput.value = '';
+        }
+
+        // Set thumbnail if exists
+        if (blog.thumbnail) {
+            const imageBox = document.getElementById('dropImageBox');
+            const placeholder = imageBox.querySelector('.placeholder');
+            const removeBtn = imageBox.querySelector('.remove-image');
+            
+            imageBox.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${blog.thumbnail})`;
+            imageBox.style.backgroundSize = 'cover';
+            imageBox.style.backgroundPosition = 'center';
+            placeholder.style.display = 'none';
+            removeBtn.style.display = '';
+            removeBtn.textContent = 'Change Image';
+            
+            // Store the current thumbnail path for potential deletion
+            window.setCurrentThumbnailPath(blog.thumbnail);
+            
+            // Clear the file input so we don't re-upload unless changed
+            const dropImageInput = document.getElementById('dropImageInput');
+            if (dropImageInput) {
+                dropImageInput.value = '';
+            }
+        }
+    }
+
+    function addTagProgrammatically(text) {
+        // Reuse the tag adding logic from existing code
+        text = (text || '').trim();
+        if (!text) return;
+
+        // Check for duplicates
+        const existing = Array.from(tagsHiddenContainer.querySelectorAll('input[name="tags[]"]')).some(i => i.value === text);
+        if (existing) return;
+
+        const idCounter = tagsHiddenContainer.querySelectorAll('input[name="tags[]"]').length;
+        const id = 'tag-' + (idCounter + 1);
+
+        // Create list item
+        const li = document.createElement('li');
+        li.dataset.id = id;
+        const span = document.createElement('span');
+        span.textContent = text;
+        li.appendChild(span);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'remove-tag-btn';
+        btn.setAttribute('aria-label', 'Remove tag');
+        btn.textContent = '×';
+        btn.addEventListener('click', function() {
+            removeTagProgrammatically(id);
+        });
+        li.appendChild(btn);
+        tagDisplayList.appendChild(li);
+
+        // Create hidden input
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'tags[]';
+        hidden.value = text;
+        hidden.id = 'hidden-' + id;
+        hidden.dataset.id = id;
+        tagsHiddenContainer.appendChild(hidden);
+    }
+
+    function removeTagProgrammatically(id) {
+        const li = tagDisplayList.querySelector('li[data-id="' + id + '"]');
+        if (li) li.remove();
+        const hidden = tagsHiddenContainer.querySelector('input[data-id="' + id + '"]');
+        if (hidden) hidden.remove();
+    }
+
+	function switchToEditMode(blogId, blogStatus) {
+        // Change header
+        headerSpan.textContent = 'Edit Blog';
+        subheaderLabel.textContent = 'Edit Draft';
+
+        // Update form action and method
+        form.action = `/admin/blogs/${blogId}`;
+        form.method = 'post'; // Laravel uses POST with _method for PATCH
+        
+        // Add/update the hidden _method field for PATCH
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PATCH';
+
+		const isPublished = blogStatus === 'published';
+		const isScheduled = blogStatus === 'scheduled';
+
+		// Default edit behavior (draft edits): keep all action buttons
+		if (draftBtn) {
+			draftBtn.style.display = '';
+			draftBtn.textContent = 'Save Changes';
+			draftBtn.value = 'Draft';
+		}
+		if (publishBtn) {
+			publishBtn.style.display = '';
+			publishBtn.textContent = 'Publish Now';
+			publishBtn.value = 'Published';
+		}
+		if (scheduleBtn) {
+			scheduleBtn.style.display = '';
+			scheduleBtn.textContent = 'Reschedule';
+			scheduleBtn.value = 'Scheduled';
+		}
+
+		// Requested behavior:
+		// - Published: only Save Changes button
+		// - Scheduled (Reschedule): only Save Changes button
+		if (isPublished) {
+			if (draftBtn) draftBtn.style.display = 'none';
+			if (scheduleBtn) scheduleBtn.style.display = 'none';
+			if (publishBtn) {
+				publishBtn.style.display = '';
+				publishBtn.textContent = 'Save Changes';
+				publishBtn.value = 'Published';
+			}
+		}
+
+		if (isScheduled) {
+			if (draftBtn) draftBtn.style.display = 'none';
+			if (publishBtn) publishBtn.style.display = 'none';
+			if (scheduleBtn) {
+				scheduleBtn.style.display = '';
+				scheduleBtn.textContent = 'Save Changes';
+				scheduleBtn.value = 'Scheduled';
+			}
+		}
+
+        // Store blog ID in form for reference
+        form.dataset.editingBlogId = blogId;
+    }
+
+    function switchToCreateMode() {
+        // Change header back
+        headerSpan.textContent = 'Create Blog';
+        subheaderLabel.textContent = 'Create Blog';
+
+        // Reset form action
+        form.action = form.getAttribute('data-store-route') || '/admin/blogs';
+        form.method = 'post';
+
+        // Remove _method field
+        const methodInput = form.querySelector('input[name="_method"]');
+        if (methodInput) {
+            methodInput.remove();
+        }
+
+        // Reset button labels
+        if (draftBtn) {
+			draftBtn.style.display = '';
+            draftBtn.textContent = 'Save as Draft';
+			draftBtn.value = 'Draft';
+        }
+        if (publishBtn) {
+			publishBtn.style.display = '';
+            publishBtn.textContent = 'Publish';
+			publishBtn.value = 'Published';
+        }
+        if (scheduleBtn) {
+			scheduleBtn.style.display = '';
+            scheduleBtn.textContent = 'Schedule';
+			scheduleBtn.value = 'Scheduled';
+        }
+
+        // Clear blog ID and old_thumbnail
+        form.dataset.editingBlogId = '';
+        currentEditingBlogId = null;
+        const oldThumbnailInput = document.getElementById('old-thumbnail');
+        if (oldThumbnailInput) {
+            oldThumbnailInput.value = '';
+        }
+        
+        // Clear scheduled_at field
+        const scheduledAtInput = document.getElementById('scheduled_at');
+        if (scheduledAtInput) {
+            scheduledAtInput.value = '';
+        }
+    }
+
+    function scrollToForm() {
+        const editorLeft = document.querySelector('.editor-left');
+        if (editorLeft) {
+            editorLeft.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Optional: Add a "Create New" button to switch back to create mode
+    // You can manually click on the menu or call switchToCreateMode()
+});
+
+// Real-time Draft Search and Sorting
+document.addEventListener('DOMContentLoaded', function() {
+    const draftSearchInput = document.getElementById('draft-search-input');
+    const draftSortSelect = document.getElementById('draft-sort-select');
+    const draftListUl = document.getElementById('draft-list-ul');
+    
+    if (!draftSearchInput || !draftSortSelect || !draftListUl) return;
+    
+    const draftItems = Array.from(document.querySelectorAll('.draft-item'));
+    
+    // Search functionality
+    draftSearchInput.addEventListener('input', function() {
+        filterAndSortDrafts();
+    });
+    
+    // Sort functionality
+    draftSortSelect.addEventListener('change', function() {
+        filterAndSortDrafts();
+    });
+    
+    function filterAndSortDrafts() {
+        const searchTerm = draftSearchInput.value.toLowerCase().trim();
+        const sortType = draftSortSelect.value;
+        
+        // Filter drafts
+        let visibleDrafts = draftItems.filter(item => {
+            const title = item.getAttribute('data-title') || '';
+            const author = item.getAttribute('data-author') || '';
+            
+            if (searchTerm === '') return true;
+            
+            return title.includes(searchTerm) || author.includes(searchTerm);
+        });
+        
+        // Sort drafts
+        visibleDrafts.sort((a, b) => {
+            switch(sortType) {
+                case 'oldest':
+                    return parseInt(a.getAttribute('data-date')) - parseInt(b.getAttribute('data-date'));
+                case 'newest':
+                    return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
+                case 'az':
+                    return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+                case 'za':
+                    return b.getAttribute('data-title').localeCompare(a.getAttribute('data-title'));
+                default:
+                    return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
+            }
+        });
+        
+        // Hide all items first
+        draftItems.forEach(item => {
+            item.style.display = 'none';
+        });
+        
+        // Show and reorder visible items
+        visibleDrafts.forEach(item => {
+            item.style.display = '';
+            draftListUl.appendChild(item);
+        });
+        
+        // Show "no results" message if needed
+        let noResultsMsg = draftListUl.querySelector('.no-results-msg');
+        
+        if (visibleDrafts.length === 0) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('li');
+                noResultsMsg.className = 'no-results-msg';
+                noResultsMsg.style.cssText = 'padding: 2rem; text-align: center; color: #666; list-style: none;';
+                noResultsMsg.textContent = 'No drafts found';
+                draftListUl.appendChild(noResultsMsg);
+            }
+        } else {
+            if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
+        }
+    }
 });

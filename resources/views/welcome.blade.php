@@ -7,7 +7,7 @@
     <title>Daily Eggspress</title>
     @vite('resources/css/welcome_style.css')
     <script>
-        window.showRegister = {{ session('show_register') ? 'true' : 'false' }};
+        window.showRegister = {{ (session('show_register') || request()->query('form') === 'register') ? 'true' : 'false' }};
     </script>
 </head>
 <body>

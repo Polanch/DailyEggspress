@@ -26,14 +26,15 @@
     @endif
     <div class="workspace">
         <div class="workspace-header">
-            <h1 class="admin-header"><img src="/images/menu1.png" class="admin-h-icn">Dashboard<span class="slash">/</span>Workspace<span class="slash">/</span> <span id="hh">Create Blog</span></h1>
-            <h3 class="admin-subheader">Create Blog</h3>
+            <h1 class="admin-header"><img src="/images/menu2.png" class="admin-h-icn">Dashboard<span class="slash">/</span>Workspace<span class="slash">/</span> <span id="hh">Create Blog</span></h1>
+            <h3 class="admin-subheader" id="form-mode-label">Create Blog</h3>
         </div>
         <div class="workspace-editor">
             <div class="editor-left">
                 <div class="editor-form-window">
-                    <form id="blog-editor-form" action="{{ route('blogs.store') }}" method="post" enctype="multipart/form-data">
+                    <form id="blog-editor-form" action="{{ route('blogs.store') }}" method="post" enctype="multipart/form-data" data-store-route="{{ route('blogs.store') }}">
                         @csrf
+                        <input type="hidden" id="old-thumbnail" name="old_thumbnail" value="">
                         <div class="drop-image-box" id="dropImageBox">
                             <input type="file" id="dropImageInput" name="thumbnail" accept="image/*" style="display:none">
                             <button type="button" class="remove-image" style="display:none">Remove</button>
@@ -106,6 +107,14 @@
                                                     <input type="text" id="color-hex-input" class="color-hex-input" placeholder="#RRGGBB" maxlength="7" aria-label="Hex color input" autocomplete="off">
                                                 </div>
                                         </button>
+                                        <button type="button" id="font-size-decrease-btn" title="Decrease Font Size">A-</button>
+                                        <button type="button" id="font-size-increase-btn" title="Increase Font Size">A+</button>
+                                        <select id="font-family-select" title="Font Family">
+                                            <option value="">Font</option>
+                                            <option value="'FoodBuka', sans-serif">FoodBuka</option>
+                                            <option value="'Jua', sans-serif">Jua</option>
+                                            <option value="'Inter', sans-serif">Inter</option>
+                                        </select>
                                     </div>
                                     <div id="editor" class="editor-content" contenteditable="true" aria-label="Post editor" spellcheck="true"></div>
                                     <!-- hidden field to submit HTML content -->
@@ -114,8 +123,13 @@
                                     <input type="file" id="editor-image-input" accept="image/*" style="display:none">
                                 </div>
                             </div>
+                            <div class="schedule-section" id="schedule-section">
+                                <label for="scheduled_at">Schedule Post For:</label>
+                                <input type="datetime-local" id="scheduled_at" name="scheduled_at" placeholder="Select date and time">
+                            </div>
                             <div class="tool-footer">
                                 <button type="submit" name="action" value="Draft" class="edit-btn-save">Save as Draft</button>
+                                <button type="submit" name="action" value="Scheduled" class="edit-btn-schedule">Schedule</button>
                                 <button type="submit" name="action" value="Published" class="edit-btn-publish">Publish</button>
                             </div>
                         </div>
@@ -124,8 +138,8 @@
             </div>
             <div class="editor-right">
                 <span class="draft-list-header">
-                    <p>Saved Drafts</p>
-                    <p>({{ \App\Models\Blog::where('blog_status', 'draft')->count() }})</p>
+                    <p>Pending</p>
+                    <p>({{ \App\Models\Blog::whereIn('blog_status', ['draft', 'scheduled'])->where('user_id', Auth::id())->count() }})</p>
                     <span class="filter-drafts">
                         <select id="draft-sort-select">
                             <option value="newest">Newest First</option>
@@ -139,37 +153,62 @@
                     <input type="text" id="draft-search-input" placeholder="Search Drafts...">
                     <button id="draft-search-btn"><img src="/images/search2.png" class="d-search"></button>
                 </div>
-                <ul class="draft-list">
-                    @php
-                        $drafts = \App\Models\Blog::where('blog_status', 'draft')->orderBy('created_at', 'desc')->get();
-                    @endphp
-                    @forelse ($drafts as $draft)
-                        <li>
+                <div class="draft-list">
+                    <ul id="draft-list-ul">
+                        @foreach ($drafts as $draft)
+                        <li class="draft-item" 
+                            data-title="{{ strtolower($draft->blog_title) }}"
+                            data-author="{{ strtolower($draft->user->first_name . ' ' . $draft->user->last_name) }}"
+                            data-date="{{ $draft->created_at->timestamp }}">
                             <div class="draft-thumbnail">
-                                @if ($draft->thumbnail && file_exists(public_path('storage/' . $draft->thumbnail)))
-                                    <img src="{{ asset('storage/' . $draft->thumbnail) }}" alt="Draft Thumbnail" class="draft-thumb-img">
+                                @if ($draft->thumbnail && file_exists(public_path($draft->thumbnail)))
+                                    <img src="{{ asset($draft->thumbnail) }}" alt="Draft Thumbnail" class="draft-thumb-img">
                                 @else
                                     <img src="/images/empty.png" alt="Draft Thumbnail" class="draft-thumb-img">
                                 @endif
                             </div>
                             <div class="draft-info">
-                                <p>{{ $draft->blog_title }}</p>
+                                <p class="draft-title">
+                                    <span class="title-text">{{ $draft->blog_title }}</span>
+                                    @if($draft->blog_status === 'scheduled')
+                                        <span class="draft-status-badge scheduled">Scheduled</span>
+                                    @endif
+                                </p>
+                                <p>By:{{ $draft->user->first_name }} {{ $draft->user->last_name }}</p>
                                 <p>{{ $draft->created_at->format('M d, Y') }}</p>
+                                @if($draft->blog_status === 'scheduled' && $draft->scheduled_at)
+                                    <p>Scheduled For</br>{{ $draft->scheduled_at->format('M d, Y h:i a') }}</p>
+                                @else
+                                    <p>Last Modified</br>{{ $draft->updated_at->format('Y-m-d h:i a') }}</p>
+                                @endif
                                 <div class="draft-btn-holder">
-                                   <button type="button" class="draft-action-btn">
+                                    <button type="button" class="draft-action-btn">
                                         <img src="/images/t9.png" alt="">
-                                    </button> 
-                                    
+                                    </button>
+                                    <div class="delete-options">
+                                         <form action="{{ route('blogs.trash', $draft->id) }}" method="post">
+                                            @csrf
+                                            <button type="submit" class="edit-btn">Move to Trash</button>
+                                        </form>
+                                        <form action="{{ route('blogs.destroy', $draft->id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this draft?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="delete-btn">Delete Draft</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="edit-draft">
+                                    <button type="button" class="edit-draft-btn" data-blog-id="{{ $draft->id }}">Edit</button>
                                 </div>
                             </div>
                         </li>
-                    @empty
-                        <li style="text-align:center; color:#888; padding:20px;">No drafts found.</li>
-                    @endforelse
-                </ul>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
-        
     </div>
+
+    
 @endsection
 

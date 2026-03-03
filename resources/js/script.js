@@ -1,6 +1,18 @@
 
 // Page behavior: border draw trigger + condensed sign window toggles
 document.addEventListener('DOMContentLoaded', function () {
+	// Auto-dismiss alerts after 2 seconds
+	var alerts = document.querySelectorAll('.alert, .alert-success, .alert-error, .alert-danger');
+	alerts.forEach(function(alert) {
+		setTimeout(function() {
+			alert.style.transition = 'opacity 0.25s ease';
+			alert.style.opacity = '0';
+			setTimeout(function() {
+				alert.style.display = 'none';
+			}, 250);
+		}, 2000);
+	});
+
 	// 1) Trigger .left-nav border draw after `#egg-crack-left` animation completes
 	var eggLeft = document.getElementById('egg-crack-left');
 	var leftNav = document.querySelector('.left-nav');
@@ -29,6 +41,30 @@ document.addEventListener('DOMContentLoaded', function () {
 		// close when clicking outside
 		document.addEventListener('click', function () {
 			if (condWin.classList.contains('show')) condWin.classList.remove('show');
+		});
+	}
+
+	// 2b) Profile dropdown toggle (authenticated layout)
+	var profileBtn = document.querySelector('.profile-menu-btn');
+	var profileDropdown = document.querySelector('.profile-dropdown');
+	if (profileBtn && profileDropdown) {
+		profileBtn.addEventListener('click', function (e) {
+			e.stopPropagation();
+			profileDropdown.classList.toggle('show');
+			profileBtn.classList.toggle('active');
+			profileBtn.setAttribute('aria-expanded', profileDropdown.classList.contains('show') ? 'true' : 'false');
+			profileDropdown.setAttribute('aria-hidden', profileDropdown.classList.contains('show') ? 'false' : 'true');
+		});
+
+		profileDropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
+		document.addEventListener('click', function () {
+			if (profileDropdown.classList.contains('show')) {
+				profileDropdown.classList.remove('show');
+				profileBtn.classList.remove('active');
+				profileBtn.setAttribute('aria-expanded', 'false');
+				profileDropdown.setAttribute('aria-hidden', 'true');
+			}
 		});
 	}
 
@@ -158,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				}
 			});
 		})();
-		var taglineDates = document.querySelectorAll('.the-header .tagline p');
+		var taglineDates = document.querySelectorAll('.the-header .tagline p:not(.no-date-update)');
 		if (!taglineDates || taglineDates.length === 0) return;
 
 		function updateTagline() {
@@ -217,5 +253,152 @@ document.addEventListener('DOMContentLoaded', function(){
 			wrap.classList.remove('expanded');
 			btn.innerHTML = tagsCollapsedHTML;
 		}
+	});
+});
+
+// AJAX reaction handler for instant like/dislike updates
+document.addEventListener('DOMContentLoaded', function() {
+	var reactionBtns = document.querySelectorAll('.reaction-btn[data-reaction]');
+	var replyBtns = document.querySelectorAll('.reply-btn');
+	var cancelReplyBtns = document.querySelectorAll('.cancel-reply-btn');
+
+	replyBtns.forEach(function(btn) {
+		btn.addEventListener('click', function() {
+			var commentId = this.getAttribute('data-comment-id');
+			var replyForm = document.querySelector('.reply-form[data-comment-id="' + commentId + '"]');
+
+			document.querySelectorAll('.reply-form').forEach(function(form) {
+				form.style.display = 'none';
+				var formTextArea = form.querySelector('textarea');
+				if (formTextArea) {
+					formTextArea.value = '';
+				}
+			});
+
+			document.querySelectorAll('.reply-btn').forEach(function(button) {
+				button.style.display = 'inline-flex';
+			});
+
+			if (replyForm) {
+				replyForm.style.display = 'block';
+				this.style.display = 'none';
+			}
+		});
+	});
+
+	cancelReplyBtns.forEach(function(btn) {
+		btn.addEventListener('click', function(e) {
+			e.preventDefault();
+			var replyForm = this.closest('.reply-form');
+			var commentId = replyForm.getAttribute('data-comment-id');
+			var replyBtn = document.querySelector('.reply-btn[data-comment-id="' + commentId + '"]');
+
+			if (replyForm) {
+				replyForm.style.display = 'none';
+				replyForm.querySelector('textarea').value = '';
+				// Reset character counter
+				var charCounter = replyForm.querySelector('.char-count');
+				var counterContainer = replyForm.querySelector('.char-counter');
+				if (charCounter) {
+					charCounter.textContent = '0';
+				}
+				if (counterContainer) {
+					counterContainer.classList.remove('over-limit');
+				}
+			}
+			if (replyBtn) {
+				replyBtn.style.display = 'inline-block';
+			}
+		});
+	});
+
+	// Character counter for comment and reply textareas
+	function updateCharCounter(textarea) {
+		var charCount = textarea.value.length;
+		var form = textarea.closest('form');
+		if (form) {
+			var counter = form.querySelector('.char-count');
+			var counterContainer = form.querySelector('.char-counter');
+			if (counter) {
+				counter.textContent = charCount;
+				// Add 'over-limit' class if exceeds 1000
+				if (counterContainer) {
+					if (charCount > 1000) {
+						counterContainer.classList.add('over-limit');
+					} else {
+						counterContainer.classList.remove('over-limit');
+					}
+				}
+			}
+		}
+	}
+
+	// Main comment textarea
+	var mainCommentTextarea = document.querySelector('.comment-form textarea[name="comment"]');
+	if (mainCommentTextarea) {
+		mainCommentTextarea.addEventListener('input', function() {
+			updateCharCounter(this);
+		});
+	}
+
+	// Reply textareas
+	var replyTextareas = document.querySelectorAll('.reply-form textarea[name="comment"]');
+	replyTextareas.forEach(function(textarea) {
+		textarea.addEventListener('input', function() {
+			updateCharCounter(this);
+		});
+	});
+	
+	reactionBtns.forEach(function(btn) {
+		btn.addEventListener('click', function(e) {
+			e.preventDefault();
+			
+			var reactionType = this.getAttribute('data-reaction');
+			var blogId = this.getAttribute('data-blog-id');
+			var csrfToken = this.getAttribute('data-csrf');
+			
+			fetch('/user/blogs/' + blogId + '/reaction', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-TOKEN': csrfToken,
+					'Accept': 'application/json',
+				},
+				body: JSON.stringify({
+					reaction_type: reactionType,
+				})
+			})
+			.then(function(response) { return response.json(); })
+			.then(function(data) {
+				if (data.success) {
+					// Update button states
+					var likeBtn = document.querySelector('.reaction-btn[data-reaction="like"][data-blog-id="' + blogId + '"]');
+					var dislikeBtn = document.querySelector('.reaction-btn[data-reaction="dislike"][data-blog-id="' + blogId + '"]');
+					
+					// Remove active class from both
+					likeBtn.classList.remove('active');
+					dislikeBtn.classList.remove('active');
+					
+					// Add active class to clicked button if user still has reaction
+					if (data.userReaction === 'like') {
+						likeBtn.classList.add('active');
+					} else if (data.userReaction === 'dislike') {
+						dislikeBtn.classList.add('active');
+					}
+					
+					// Update counts - find the span within the button
+					var likeCountSpan = likeBtn.querySelector('.like-count');
+					var dislikeCountSpan = dislikeBtn.querySelector('.dislike-count');
+					
+					if (likeCountSpan) {
+						likeCountSpan.textContent = data.likeCount;
+					}
+					if (dislikeCountSpan) {
+						dislikeCountSpan.textContent = data.dislikeCount;
+					}
+				}
+			})
+			.catch(function(error) { console.error('Error:', error); });
+		});
 	});
 });

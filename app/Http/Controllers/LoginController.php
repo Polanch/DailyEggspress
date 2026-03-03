@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
+use App\Models\Blog;
+use App\Models\BlogComment;
+use App\Models\BlogReaction;
+use App\Models\BlogView;
 
 
 class LoginController extends Controller
@@ -16,10 +20,13 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
+            if ($user->role === 'banned') {
+                return redirect()->route('banned.appeal');
+            }
             if ($user->role === 'admin') {
                 return redirect('/admin/dashboard');
             }
-            return redirect('/user/dashboard');
+            return redirect()->route('user.home');
         }
         return view('welcome');
     }
@@ -32,7 +39,12 @@ class LoginController extends Controller
         $remember = $request->filled('remember');
         if (Auth::attempt([$fieldType => $login, 'password' => $password], $remember)) {
             $user = Auth::user();
+            $user->last_login_at = now();
+            $user->save();
             Session::put('role', $user->role);
+            if ($user->role === 'banned') {
+                return redirect()->route('banned.appeal');
+            }
             if ($user->role === 'admin') {
                 return redirect('/admin/dashboard');
             }
@@ -87,14 +99,14 @@ class LoginController extends Controller
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
-        return redirect('/user/dashboard')->with('success', 'Email verified!');
+        return redirect()->route('user.home')->with('success', 'Email verified!');
     }
 
     public function resendVerification(Request $request)
     {
         $user = Auth::user();
         if ($user->hasVerifiedEmail()) {
-            return redirect('/user/dashboard');
+            return redirect()->route('user.home');
         }
         $user->sendEmailVerificationNotification();
         return back()->with('success', 'Verification email resent!');
@@ -103,10 +115,182 @@ class LoginController extends Controller
     public function showUserDashboard()
     {
         $user = Auth::user();
+        if ($user->role === 'banned') {
+            return redirect()->route('banned.appeal');
+        }
         if (! $user->hasVerifiedEmail()) {
             return redirect('/email/verify')->with('error', 'Please verify your email before accessing the dashboard.');
         }
-        return view('user_dashboard');
+        
+        $blog = Blog::where('blog_status', 'published')
+            ->with('user')
+            ->latest()
+            ->first();
+
+        if (!$blog) {
+            return view('user_dashboard', [
+                'blog' => null,
+                'popularBlogs' => collect(),
+                'randomBlogs' => collect(),
+                'tags' => collect(),
+                'comments' => collect(),
+                'likeCount' => 0,
+                'dislikeCount' => 0,
+                'userReaction' => null,
+            ]);
+        }
+
+        $this->recordBlogView($blog);
+
+        // Get the most liked blog for big-blog-info section
+        $mostLikedBlog = Blog::where('blog_status', 'published')
+            ->with('user')
+            ->get()
+            ->map(function ($b) {
+                $b->likeCount = BlogReaction::where('blog_id', $b->id)
+                    ->where('reaction_type', 'like')
+                    ->count();
+                return $b;
+            })
+            ->sortByDesc('likeCount')
+            ->first();
+
+        $popularBlogs = Blog::where('blog_status', 'published')
+            ->where('id', '!=', $blog->id)
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($b) {
+                $b->likeCount = BlogReaction::where('blog_id', $b->id)
+                    ->where('reaction_type', 'like')
+                    ->count();
+                $b->dislikeCount = BlogReaction::where('blog_id', $b->id)
+                    ->where('reaction_type', 'dislike')
+                    ->count();
+                $b->commentCount = BlogComment::where('blog_id', $b->id)
+                    ->whereNull('parent_id')
+                    ->count();
+                return $b;
+            });
+
+        $randomBlogs = Blog::where('blog_status', 'published')
+            ->where('id', '!=', $blog->id)
+            ->inRandomOrder()
+            ->take(4)
+            ->get()
+            ->map(function ($b) {
+                $b->likeCount = BlogReaction::where('blog_id', $b->id)
+                    ->where('reaction_type', 'like')
+                    ->count();
+                $b->dislikeCount = BlogReaction::where('blog_id', $b->id)
+                    ->where('reaction_type', 'dislike')
+                    ->count();
+                $b->commentCount = BlogComment::where('blog_id', $b->id)
+                    ->whereNull('parent_id')
+                    ->count();
+                return $b;
+            });
+
+        $tags = Blog::where('blog_status', 'published')
+            ->whereNotNull('tags')
+            ->pluck('tags')
+            ->flatten()
+            ->filter(fn ($tag) => is_string($tag) && trim($tag) !== '')
+            ->map(fn ($tag) => trim($tag))
+            ->unique()
+            ->values()
+            ->take(24);
+
+        $comments = BlogComment::where('blog_id', $blog->id)
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user'])
+            ->latest()
+            ->get();
+
+        $likeCount = BlogReaction::where('blog_id', $blog->id)
+            ->where('reaction_type', 'like')
+            ->count();
+
+        $dislikeCount = BlogReaction::where('blog_id', $blog->id)
+            ->where('reaction_type', 'dislike')
+            ->count();
+
+        $userReaction = BlogReaction::where('blog_id', $blog->id)
+            ->where('user_id', Auth::id())
+            ->value('reaction_type');
+
+        return view('user_dashboard', compact(
+            'blog',
+            'mostLikedBlog',
+            'popularBlogs',
+            'randomBlogs',
+            'tags',
+            'comments',
+            'likeCount',
+            'dislikeCount',
+            'userReaction'
+        ));
+    }
+
+    private function recordBlogView(Blog $blog): void
+    {
+        $userId = Auth::id();
+        $ipAddress = request()->ip();
+        $userAgent = request()->userAgent();
+
+        $existingView = BlogView::where('blog_id', $blog->id)
+            ->where(function ($query) use ($userId, $ipAddress) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('ip_address', $ipAddress);
+                }
+            })
+            ->where('created_at', '>=', now()->subHours(24))
+            ->first();
+
+        if (!$existingView) {
+            BlogView::create([
+                'blog_id' => $blog->id,
+                'user_id' => $userId,
+                'ip_address' => $ipAddress,
+                'user_agent' => $userAgent,
+            ]);
+
+            $blog->increment('views_count');
+        }
+    }
+
+    public function showBannedAppeal()
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'banned') {
+            return redirect('/');
+        }
+
+        return view('auth.banned_appeal', [
+            'bannedComment' => $user->banned_comment_text,
+            'appealMessage' => $user->appeal_message,
+            'appealedAt' => $user->appealed_at,
+        ]);
+    }
+
+    public function submitBannedAppeal(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'banned') {
+            return redirect('/');
+        }
+
+        $request->validate([
+            'appeal_message' => 'required|string|max:2000',
+        ]);
+
+        $user->appeal_message = $request->input('appeal_message');
+        $user->appealed_at = now();
+        $user->save();
+
+        return redirect()->route('banned.appeal')->with('success', 'Appeal submitted successfully.');
     }
 
     // Show form to request OTP

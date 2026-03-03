@@ -27,6 +27,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'profile_picture',
         'role',
+        'banned_comment_id',
+        'banned_comment_text',
+        'appeal_message',
+        'appealed_at',
     ];
 
     /**
@@ -47,5 +51,17 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'appealed_at' => 'datetime',
+        'last_login_at' => 'datetime',
     ];
+
+    public function blogComments()
+    {
+        return $this->hasMany(BlogComment::class);
+    }
+
+    public function blogReactions()
+    {
+        return $this->hasMany(BlogReaction::class);
+    }
 }

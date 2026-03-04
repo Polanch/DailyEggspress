@@ -380,7 +380,7 @@ class BlogController extends Controller
 
         $popularBlogs = Blog::where('blog_status', 'published')
             ->where('id', '!=', $blog->id)
-            ->latest()
+            ->orderBy('views_count', 'desc')
             ->take(5)
             ->get()
             ->map(function ($b) {

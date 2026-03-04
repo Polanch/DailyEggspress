@@ -1,30 +1,43 @@
 @extends('layouts.security_layout')
+
+@section('title', 'Email Verification')
+
 @section('content')
-    <div class="main-container">
-        <div class="the-window">
-            <div class="text-box">
-                <h1>Verify Your Email</h1>
+<div class="security-wrap">
+    <div class="security-card">
+        <div class="verify-icon">📧</div>
+        <h1>Verify Your Email</h1>
+        <p class="security-description">
+            Please check your email and click the verification link to activate your account. 
+            If you didn't receive the email, you can request a new one below.
+        </p>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
             </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="verify-box">
+            ✓ A verification link has been sent to your email address. Please check your inbox (and spam folder) and click the link to complete your registration.
         </div>
-        <div class="the-forms">
-            <div class="form-slider">
-                <h1>Email Verification</h1>
-                <p>Please check your email and click the verification link to activate your account.</p>
-                <form method="POST" action="/email/resend">
-                    @csrf
-                    <button type="submit">Resend Verification Email</button>
-                </form>
-                <form method="POST" action="/logout" style="margin-top: 20px;">
-                    @csrf
-                    <button type="submit">Logout</button>
-                </form>
-                @if(session('success'))
-                    <div class="form-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="form-error">{{ session('error') }}</div>
-                @endif
-            </div>
+
+        <div class="button-group">
+            <form method="POST" action="/email/resend">
+                @csrf
+                <button type="submit" class="security-btn">Resend Verification Email</button>
+            </form>
+            <form method="POST" action="/logout">
+                @csrf
+                <button type="submit" class="security-btn security-btn-secondary">Logout</button>
+            </form>
         </div>
     </div>
+</div>
 @endsection

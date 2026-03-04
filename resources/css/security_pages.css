@@ -1,0 +1,249 @@
+/* Security Pages Styling (Verify Email, Reset Password) */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.security-wrap {
+    min-height: 100vh;
+    width: 100%;
+    background: #F0DED2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.security-card {
+    width: min(600px, 100%);
+    background: #FCEFE8;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.security-card h1 {
+    color: #23130B;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.security-card h2 {
+    color: #23130B;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.security-description {
+    color: #6f4b3a;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    color: #23130B;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="text"] {
+    border: 1px solid #d9b9a8;
+    border-radius: 8px;
+    padding: 12px;
+    color: #23130B;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="password"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #E8B400;
+    box-shadow: 0 0 0 3px rgba(232, 180, 0, 0.1);
+}
+
+.security-btn {
+    border: none;
+    border-radius: 8px;
+    background: #E8B400;
+    color: #23130B;
+    font-weight: 600;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.security-btn:hover {
+    background: #d4a000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 180, 0, 0.3);
+}
+
+.security-btn:active {
+    transform: translateY(0);
+}
+
+.security-btn-secondary {
+    background: #d9b9a8;
+    color: #23130B;
+}
+
+.security-btn-secondary:hover {
+    background: #c9a498;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 14px;
+    margin-top: 10px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background: #e8f6ed;
+    border-left-color: #1f6b37;
+    color: #1f6b37;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fdecec;
+    border-left-color: #8d2929;
+    color: #8d2929;
+}
+
+.alert-warning {
+    background: #fff8e8;
+    border-left-color: #9a7200;
+    color: #6f4b3a;
+}
+
+/* Verify Email Specific Styles */
+.verify-box {
+    background: #fff7f2;
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 4px solid #E8B400;
+    color: #6f4b3a;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.verify-icon {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.button-group .security-btn {
+    margin-top: 0;
+}
+
+/* Reset Password Specific Styles */
+.password-requirements {
+    background: #fff7f2;
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 4px solid #a63333;
+    color: #6f4b3a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.password-requirements strong {
+    color: #23130B;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.password-requirements ul {
+    margin-left: 15px;
+}
+
+.password-requirements li {
+    margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .security-card {
+        padding: 30px 20px;
+    }
+
+    .security-card h1,
+    .security-card h2 {
+        font-size: 22px;
+    }
+
+    .form-group input[type="password"],
+    .form-group input[type="email"],
+    .form-group input[type="text"] {
+        padding: 10px;
+        font-size: 16px; /* Prevents zoom on mobile */
+    }
+
+    .security-btn {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .security-wrap {
+        padding: 15px;
+    }
+
+    .security-card {
+        padding: 20px 15px;
+        gap: 15px;
+    }
+
+    .security-card h1,
+    .security-card h2 {
+        font-size: 20px;
+    }
+
+    .security-description {
+        font-size: 14px;
+    }
+
+    .verify-icon {
+        font-size: 36px;
+    }
+}

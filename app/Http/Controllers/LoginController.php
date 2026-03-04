@@ -23,7 +23,7 @@ class LoginController extends Controller
             if ($user->role === 'banned') {
                 return redirect()->route('banned.appeal');
             }
-            if ($user->role === 'admin') {
+            if ($user->role === 'admin' || $user->role === 'moderator') {
                 return redirect('/admin/dashboard');
             }
             return redirect()->route('user.home');
@@ -45,7 +45,7 @@ class LoginController extends Controller
             if ($user->role === 'banned') {
                 return redirect()->route('banned.appeal');
             }
-            if ($user->role === 'admin') {
+            if ($user->role === 'admin' || $user->role === 'moderator') {
                 return redirect('/admin/dashboard');
             }
             return redirect('/user/dashboard');

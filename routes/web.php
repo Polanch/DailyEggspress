@@ -27,25 +27,30 @@ Route::get('/user/blogs/{id}', [BlogController::class, 'showUserBlog'])->middlew
 Route::post('/user/blogs/{id}/reaction', [BlogController::class, 'saveReaction'])->middleware(['auth', 'verified'])->name('user.blog.reaction');
 Route::post('/user/blogs/{id}/comment', [BlogController::class, 'saveComment'])->middleware(['auth', 'verified'])->name('user.blog.comment');
 
-Route::middleware('checkRole:admin')->group(function () {
+// Admin and Moderator dashboard and moderation routes (with some restrictions for moderator)
+Route::middleware('checkRole:admin,moderator')->group(function () {
     Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'showDashboard'])->name('admin.dashboard');
-     Route::get('/admin/trash', [BlogController::class, 'showAdminTrash'])->name('admin.trash');
-    Route::get('/admin/trash/search', [BlogController::class, 'searchAdminTrash'])->name('admin.trash.search');
-    Route::post('/admin/trash/{id}/restore', [BlogController::class, 'restoreFromTrash'])->name('admin.trash.restore');
-    Route::delete('/admin/trash/{id}', [BlogController::class, 'deleteTrashBlog'])->name('admin.trash.delete');
+    Route::get('/admin/posts', [BlogController::class, 'showAdminPosts'])->name('admin.posts');
+    Route::get('/admin/comments', [BlogController::class, 'showAdminComments'])->name('admin.comments');
+    Route::get('/admin/comments/search', [BlogController::class, 'searchAdminComments'])->name('admin.comments.search');
+    Route::delete('/admin/comments/{id}', [BlogController::class, 'deleteAdminComment'])->name('admin.comments.delete');
+    Route::get('/admin/workspace', [BlogController::class, 'index']);
+    Route::get('/admin/workspace/create', [BlogController::class, 'showDrafts'])->middleware('auth');
     Route::get('/admin/users', [BlogController::class, 'showAdminUsers'])->name('admin.users');
     Route::get('/admin/users/search', [BlogController::class, 'searchAdminUsers'])->name('admin.users.search');
     Route::get('/admin/users/{id}/appeal', [BlogController::class, 'showUserAppeal'])->name('admin.users.appeal');
     Route::post('/admin/users/{id}/ban', [BlogController::class, 'banUser'])->name('admin.users.ban');
     Route::post('/admin/users/{id}/unban', [BlogController::class, 'unbanUser'])->name('admin.users.unban');
-    Route::delete('/admin/users/{id}', [BlogController::class, 'deleteUser'])->name('admin.users.delete');
-    Route::get('/admin/posts', [BlogController::class, 'showAdminPosts'])->name('admin.posts');
-    Route::get('/admin/comments', [BlogController::class, 'showAdminComments'])->name('admin.comments');
-    Route::get('/admin/comments/search', [BlogController::class, 'searchAdminComments'])->name('admin.comments.search');
     Route::post('/admin/comments/{id}/ban', [BlogController::class, 'banCommentUser'])->name('admin.comments.ban');
-    Route::delete('/admin/comments/{id}', [BlogController::class, 'deleteAdminComment'])->name('admin.comments.delete');
-    Route::get('/admin/workspace', [BlogController::class, 'index']);
-    Route::get('/admin/workspace/create', [BlogController::class, 'showDrafts'])->middleware('auth');
+});
+
+// Admin-only routes (trash management and user deletion)
+Route::middleware('checkRole:admin')->group(function () {
+    Route::get('/admin/trash', [BlogController::class, 'showAdminTrash'])->name('admin.trash');
+    Route::get('/admin/trash/search', [BlogController::class, 'searchAdminTrash'])->name('admin.trash.search');
+    Route::post('/admin/trash/{id}/restore', [BlogController::class, 'restoreFromTrash'])->name('admin.trash.restore');
+    Route::delete('/admin/trash/{id}', [BlogController::class, 'deleteTrashBlog'])->name('admin.trash.delete');
+    Route::delete('/admin/users/{id}', [BlogController::class, 'deleteUser'])->name('admin.users.delete');
 });
 
 Route::get('/email/verify', function () {
@@ -60,13 +65,15 @@ Route::post('/email/resend', [App\Http\Controllers\LoginController::class, 'rese
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.resend');
 
-Route::post('/admin/blogs', [BlogController::class, 'store'])->middleware('checkRole:admin')->name('blogs.store');
-Route::get('/admin/blogs/{id}', [BlogController::class, 'show'])->middleware('checkRole:admin')->name('blogs.show');
-Route::patch('/admin/blogs/{id}', [BlogController::class, 'update'])->middleware('checkRole:admin')->name('blogs.update');
-Route::patch('/admin/blogs/{id}/reschedule', [BlogController::class, 'reschedule'])->middleware('checkRole:admin')->name('blogs.reschedule');
+Route::post('/admin/blogs', [BlogController::class, 'store'])->middleware('checkRole:admin,moderator')->name('blogs.store');
+Route::get('/admin/blogs/{id}', [BlogController::class, 'show'])->middleware('checkRole:admin,moderator')->name('blogs.show');
+Route::patch('/admin/blogs/{id}', [BlogController::class, 'update'])->middleware('checkRole:admin,moderator')->name('blogs.update');
+Route::patch('/admin/blogs/{id}/reschedule', [BlogController::class, 'reschedule'])->middleware('checkRole:admin,moderator')->name('blogs.reschedule');
+Route::delete('/blogs/{id}', [BlogController::class, 'destroy'])->middleware('checkRole:admin,moderator')->name('blogs.destroy');
+Route::post('/blogs/{id}/trash', [BlogController::class, 'moveToTrash'])->middleware('checkRole:admin,moderator')->name('blogs.trash');
 
-Route::post('/blog-image-upload', [BlogController::class, 'uploadImage'])->middleware('checkRole:admin')->name('blog.image.upload');
-Route::post('/remove-image', [BlogController::class, 'removeImage'])->middleware('checkRole:admin')->name('remove-image');
+Route::post('/blog-image-upload', [BlogController::class, 'uploadImage'])->middleware('checkRole:admin,moderator')->name('blog.image.upload');
+Route::post('/remove-image', [BlogController::class, 'removeImage'])->middleware('checkRole:admin,moderator')->name('remove-image');
 
 Route::get('/forgot-password', [App\Http\Controllers\LoginController::class, 'showForgotPassword'])->name('password.forgot.form');
 Route::post('/forgot-password/send-otp', [App\Http\Controllers\LoginController::class, 'sendOtp'])->name('password.otp.send');
@@ -74,6 +81,3 @@ Route::get('/forgot-password/verify-otp', [App\Http\Controllers\LoginController:
 Route::post('/forgot-password/verify-otp', [App\Http\Controllers\LoginController::class, 'verifyOtp'])->name('password.otp.verify');
 Route::get('/forgot-password/reset', [App\Http\Controllers\LoginController::class, 'showResetPassword'])->name('password.reset.form');
 Route::post('/forgot-password/reset', [App\Http\Controllers\LoginController::class, 'resetPassword'])->name('password.reset');
-
-Route::delete('/blogs/{id}', [BlogController::class, 'destroy'])->middleware('auth')->name('blogs.destroy');
-Route::post('/blogs/{id}/trash', [BlogController::class, 'moveToTrash'])->middleware('auth')->name('blogs.trash');

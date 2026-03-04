@@ -3406,7 +3406,7 @@ textarea.auto-grow:focus{
     gap: 1rem;
 }
 
-.stat-item{
+.home-body .stat-item{
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -3417,7 +3417,7 @@ textarea.auto-grow:focus{
     transition: all 0.2s ease;
 }
 
-.stat-item:hover{
+.home-body .stat-item:hover{
     background: #fff0d9;
     transform: translateX(4px);
 }
@@ -3478,14 +3478,14 @@ textarea.auto-grow:focus{
     gap: 0.3rem;
 }
 
-.stat-label{
+.home-body .stat-label{
     font-size: 13px;
     color: #666;
     font-weight: 600;
     font-family: 'Inter', sans-serif;
 }
 
-.stat-value{
+.home-body .stat-value{
     font-size: 24px;
     font-weight: 700;
     color: #2c1810;

@@ -24,16 +24,16 @@
                     </div>
                     <h1>myBL&nbsp;&nbsp;G</h1>
                     <img src="/images/yolk.png" id="yolk">
-                    <p>Eggministrator</p>
+                    <p>@if(Auth::user()->role === 'admin') Eggministrator @else Moderator @endif</p>
                 </span>
             </div>
         </div>
         <div class="profile-container">
             <img src="/thumbnails/something4.jpg" class="profile-bg">
             <div class="profile-box">
-                <h3>John Lloyd Olipani</h3>
-                <p>Administrator</p>
-                <button class="edit-profile">Edit Profile</button>
+                <h3>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h3>
+                <p>{{ ucfirst(Auth::user()->role) }}</p>
+                <button class="edit-profile" onclick="navigateToProfile()">Edit Profile</button>
             </div>
             <img src="/images/pfp1.jpg" id="pfpic">
         </div>
@@ -63,12 +63,14 @@
                         <p>Posts</p>
                     </a>
                 </li>
+                @if(Auth::user()->role === 'admin')
                 <li>
                     <a href="/admin/trash">
                         <img src="/images/menu5.png" class="admin-menu-icn">
                         <p>Trash</p>
                     </a>
                 </li>
+                @endif
                 <li>
                     <a href="/admin/users">
                         <img src="/images/menu6.png" class="admin-menu-icn">
@@ -110,5 +112,10 @@
         </div>
     </div>
     @vite('resources/js/admin_script.js')
+    <script>
+        function navigateToProfile() {
+            window.location.href = '{{ route("user.profile") }}';
+        }
+    </script>
 </body>
 </html>

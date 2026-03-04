@@ -11,13 +11,13 @@ class CheckRole
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string  $role
+     * @param  string  ...$roles
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        // Check if user is logged in and has the required role
-        if (!$request->user() || $request->user()->role !== $role) {
+        // Check if user is logged in and has one of the required roles
+        if (!$request->user() || !in_array($request->user()->role, $roles)) {
             return redirect('/')->with('error', 'Unauthorized access.');
         }
         return $next($request);

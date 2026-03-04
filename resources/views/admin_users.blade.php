@@ -3,7 +3,7 @@
 @section('content')
     <div class="admin-users">
 		<div class="users-header">
-			<h1 class="admin-header"><img src="/images/menu6.png" class="admin-h-icn">Dashboard<span class="slash">/</span> <span id="hh">Users</span></h1>
+			<h1 class="admin-header"><img src="{{ asset('images/menu6.png') }}" class="admin-h-icn">Dashboard<span class="slash">/</span> <span id="hh">Users</span></h1>
 			<h3 class="admin-subheader">Users Management</h3>
 		</div>
 		
@@ -56,9 +56,9 @@
 			@foreach($users as $user)
 				<div class="user-tile {{ $user->role === 'banned' ? 'banned-user' : '' }}">
 					<div class="user-profile-pic">
-						<img src="{{ $user->profile_picture ? (Str::startsWith($user->profile_picture, 'storage/') ? asset($user->profile_picture) : asset('storage/' . $user->profile_picture)) : '/images/empty.png' }}" alt="{{ $user->username }}">
+						<img src="{{ $user->profile_picture ? (Str::startsWith($user->profile_picture, 'storage/') ? asset($user->profile_picture) : asset('storage/' . $user->profile_picture)) : asset('images/empty.png') }}" alt="{{ $user->username }}">
 						@if($user->role === 'banned')
-							<img src="/images/banned.png" class="banned-overlay" alt="Banned">
+							<img src="{{ asset('images/banned.png') }}" class="banned-overlay" alt="Banned">
 						@endif
 						<div class="online-indicator {{ $user->is_online ? 'online' : 'offline' }}"></div>
 					</div>
@@ -105,11 +105,13 @@
 								<button type="submit" class="user-btn ban-btn">Ban User</button>
 							</form>
 						@endif
-						<form method="POST" action="{{ route('admin.users.delete', $user->id) }}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
-							@csrf
-							@method('DELETE')
-							<button type="submit" class="user-btn delete-btn">Remove User</button>
-						</form>
+					@if(Auth::user()->role === 'admin')
+					<form method="POST" action="{{ route('admin.users.delete', $user->id) }}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
+						@csrf
+						@method('DELETE')
+						<button type="submit" class="user-btn delete-btn">Remove User</button>
+					</form>
+					@endif
 					</div>
 				</div>
 			@endforeach
@@ -140,6 +142,14 @@
 		const activeFilter = document.getElementById('activeFilter');
 		const sortFilter = document.getElementById('sortFilter');
 		const usersGrid = document.getElementById('usersGrid');
+		const emptyImageUrl = @json(asset('images/empty.png'));
+		const bannedImageUrl = @json(asset('images/banned.png'));
+		const storageBaseUrl = @json(asset('storage'));
+		const appealRouteTemplate = @json(route('admin.users.appeal', ['id' => '__ID__']));
+		const banRouteTemplate = @json(route('admin.users.ban', ['id' => '__ID__']));
+		const deleteRouteTemplate = @json(route('admin.users.delete', ['id' => '__ID__']));
+		const currentUserRole = @json(Auth::user()->role);
+		const canDeleteUsers = currentUserRole === 'admin';
 
 		// Debounced search function
 		function performSearch() {
@@ -182,40 +192,38 @@
 			}
 
 			usersGrid.innerHTML = users.map(user => {
+				const buildRoute = (template, id) => template.replace('__ID__', String(id));
 				// Handle paths that may or may not already include 'storage/' prefix
-				let profilePic = '/images/empty.png';
+				let profilePic = emptyImageUrl;
 				if (user.profile_picture) {
 					if (user.profile_picture.startsWith('storage/')) {
-						profilePic = `/${user.profile_picture}`;
+						profilePic = `${storageBaseUrl}/${user.profile_picture.replace(/^storage\//, '')}`;
 					} else {
-						profilePic = `/storage/${user.profile_picture}`;
+						profilePic = `${storageBaseUrl}/${user.profile_picture}`;
 					}
 				}
 				const isBanned = user.role === 'banned';
 				const bannedClass = isBanned ? 'banned-user' : '';
-				const bannedOverlay = isBanned ? '<img src="/images/banned.png" class="banned-overlay" alt="Banned">' : '';
+				const bannedOverlay = isBanned ? `<img src="${bannedImageUrl}" class="banned-overlay" alt="Banned">` : '';
 				const onlineClass = user.is_online ? 'online' : 'offline';
+				const deleteForm = canDeleteUsers ? `<form method="POST" action="${buildRoute(deleteRouteTemplate, user.id)}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					<input type="hidden" name="_method" value="DELETE">
+					<button type="submit" class="user-btn delete-btn">Remove User</button>
+				</form>` : '';
 				const userActions = isBanned 
 					? `<div class="user-actions">
 							<button class="user-btn banned-btn" disabled>Banned</button>
-							<a href="/admin/users/${user.id}/appeal" class="user-btn appeal-btn">View Appeal</a>
-							<form method="POST" action="/admin/users/${user.id}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-								<input type="hidden" name="_method" value="DELETE">
-								<button type="submit" class="user-btn delete-btn">Remove User</button>
-							</form>
+							<a href="${buildRoute(appealRouteTemplate, user.id)}" class="user-btn appeal-btn">View Appeal</a>
+							${deleteForm}
 						</div>`
 					: `<div class="user-actions">
 							${user.email_verified_at ? '<button class="user-btn activated-btn" disabled>Activated</button>' : '<button class="user-btn unverified-btn" disabled>Unverified</button>'}
-							<form method="POST" action="/admin/users/${user.id}/ban" onsubmit="return confirm('Are you sure you want to ban this user?');">
+							<form method="POST" action="${buildRoute(banRouteTemplate, user.id)}" onsubmit="return confirm('Are you sure you want to ban this user?');">
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 								<button type="submit" class="user-btn ban-btn">Ban User</button>
 							</form>
-							<form method="POST" action="/admin/users/${user.id}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
-								<input type="hidden" name="_token" value="{{ csrf_token() }}">
-								<input type="hidden" name="_method" value="DELETE">
-								<button type="submit" class="user-btn delete-btn">Remove User</button>
-							</form>
+							${deleteForm}
 						</div>`;
 				const statusText = user.is_online ? 'Online' : 'Offline';
 				const statusClass = user.is_online ? 'status-online' : 'status-offline';

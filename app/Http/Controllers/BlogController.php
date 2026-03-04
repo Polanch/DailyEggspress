@@ -1164,6 +1164,11 @@ class BlogController extends Controller
 
     public function deleteUser($id)
     {
+        // Only admins can delete users
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized: Only administrators can delete users.');
+        }
+        
         $user = User::findOrFail($id);
         
         if ($user->role === 'admin') {

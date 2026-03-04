@@ -814,7 +814,7 @@ body{
 .comment-header{
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.3rem;
     margin-bottom: 0.6rem;
 }
 

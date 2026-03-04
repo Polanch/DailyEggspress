@@ -6,9 +6,9 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', [BlogController::class, 'showHome']);
-Route::get('/login', [LoginController::class, 'showLogin']);
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
 
-Route::get('/home', [LoginController::class, 'showLogin'])->name('login');
+Route::get('/home', [LoginController::class, 'showLogin']);
 Route::get('/blogs/{id}', [BlogController::class, 'showPublicBlog'])->name('blogs.view');
 Route::get('/tags/{tag}', [BlogController::class, 'showTagBlogs'])->name('tags.show');
 

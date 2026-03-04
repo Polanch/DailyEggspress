@@ -50,7 +50,7 @@ class LoginController extends Controller
             }
             return redirect('/user/dashboard');
         }
-        return redirect('/')->with('error', 'Invalid credentials.');
+        return redirect('/login')->with('error', 'Invalid credentials.');
     }
 
     public function logout()
@@ -84,9 +84,15 @@ class LoginController extends Controller
             $user->sendEmailVerificationNotification();
             return redirect('/email/verify')->with('success', 'Registration successful! Please verify your email.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect('/')->withInput()->withErrors($e->validator)->with('show_register', true);
+            return redirect('/login?form=register')
+                ->withInput()
+                ->withErrors($e->validator)
+                ->with('show_register', true);
         } catch (\Exception $e) {
-            return redirect('/')->with('error', 'Registration failed. Please try again.')->with('show_register', true);
+            return redirect('/login?form=register')
+                ->withInput()
+                ->with('error', 'Registration failed. Please try again.')
+                ->with('show_register', true);
         }
     }
 

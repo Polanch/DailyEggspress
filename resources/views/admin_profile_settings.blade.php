@@ -176,6 +176,21 @@
             @method('PATCH')
 
             <div class="current-pic-section">
+                <p><strong>Current Banner:</strong></p>
+                @if(Auth::user()->banner)
+                    <img src="{{ asset(Auth::user()->banner) }}" alt="Current Banner" style="max-width: 100%; height: auto; border-radius: 8px;">
+                @else
+                    <p style="color: #666; font-style: italic;">No banner uploaded</p>
+                @endif
+            </div>
+
+            <div class="form-group">
+                <label for="banner">Upload New Banner</label>
+                <input type="file" id="banner" name="banner" accept="image/*" style="color:#23130B">
+                <div class="help-text">Recommended size: 1200x400px. Max 5MB.</div>
+            </div>
+
+            <div class="current-pic-section">
                 <p><strong>Current Profile Picture:</strong></p>
                 @if(Auth::user()->profile_picture)
                     <img src="{{ asset(Auth::user()->profile_picture) }}" alt="Current Profile Picture">

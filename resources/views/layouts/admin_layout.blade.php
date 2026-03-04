@@ -30,13 +30,13 @@
             </div>
         </div>
         <div class="profile-container">
-            <img src="/thumbnails/something4.jpg" class="profile-bg">
+            <img src="{{ Auth::user()->banner ? asset(Auth::user()->banner) : '/thumbnails/something4.jpg' }}" class="profile-bg">
             <div class="profile-box">
                 <h3>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h3>
                 <p>{{ ucfirst(Auth::user()->role) }}</p>
                 <button class="edit-profile" onclick="navigateToProfile()">Edit Profile</button>
             </div>
-            <img src="/images/pfp1.jpg" id="pfpic">
+            <img src="{{ Auth::user()->profile_picture ? asset(Auth::user()->profile_picture) : '/images/pfp1.jpg' }}" id="pfpic">
         </div>
         <div class="menu-container">
             <ul class="admin-menu">

@@ -236,6 +236,15 @@ class BlogController extends Controller
     }
     public function showHome()
     {
+        // Redirect logged-in users to their dashboard
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin' || $user->role === 'moderator') {
+                return redirect('/admin/dashboard');
+            }
+            return redirect('/user/dashboard');
+        }
+
         $latestBlog = Blog::where('blog_status', 'published')->with('user')->latest()->first();
 
         if (!$latestBlog) {
@@ -697,6 +706,11 @@ class BlogController extends Controller
         }
         $tags = array_unique($allTags);
 
+        // Check if user is authenticated and use appropriate view
+        if (Auth::check()) {
+            return view('tag_blogs_user', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags'));
+        }
+        
         return view('tag_blogs', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags'));
     }
 

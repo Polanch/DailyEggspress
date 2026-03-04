@@ -27,7 +27,8 @@ class LoginController extends Controller
             if ($user->role === 'admin' || $user->role === 'moderator') {
                 return redirect('/admin/dashboard');
             }
-            return redirect()->route('user.home');
+            // Redirect regular users to dashboard (which checks email verification)
+            return redirect('/user/dashboard');
         }
         return view('welcome');
     }

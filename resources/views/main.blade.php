@@ -25,22 +25,17 @@
                                     <div class="blog-stats">
                                         <span class="view-count"><img src="/images/view.png" class="eyecon">{{ $blog->views_count ?? 0 }}</span>
                                         <span class="like-count">👍 {{ $blog->likeCount ?? 0 }}</span>
-                                        <span class="dislike-count">👎 {{ $blog->dislikeCount ?? 0 }}</span>                                        <span class="comment-count">💬 {{ $randomBlog->commentCount ?? 0 }}</span>                                    </div>
+                                        <span class="dislike-count">👎 {{ $blog->dislikeCount ?? 0 }}</span>
+                                        <span class="comment-count">💬 {{ $blog->commentCount ?? 0 }}</span>
+                                    </div>
                                 </div>
                             </a>
                         </li>
                     @empty
                         <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Sample Title here</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">300</span>
-                                </div>
-                            </a>
+                            <div class="pop-content">
+                                <h3>No blogs yet</h3>
+                            </div>
                         </li>
                     @endforelse
                 </ul>
@@ -68,16 +63,9 @@
                         </li>
                     @empty
                         <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something7.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Random Title 1</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">120</span>
-                                </div>
-                            </a>
+                            <div class="pop-content">
+                                <h3>No blogs yet</h3>
+                            </div>
                         </li>
                     @endforelse
                 </ul>

@@ -36,7 +36,7 @@
                 <p>{{ ucfirst(Auth::user()->role) }}</p>
                 <button class="edit-profile" onclick="navigateToProfile()">Edit Profile</button>
             </div>
-            <img src="{{ Auth::user()->profile_picture ? asset(Auth::user()->profile_picture) : '/images/pfp1.jpg' }}" id="pfpic">
+            <img src="{{ Auth::user()->profile_picture ? asset(Auth::user()->profile_picture) : '/images/empty.png' }}" id="pfpic">
         </div>
         <div class="menu-container">
             <ul class="admin-menu">

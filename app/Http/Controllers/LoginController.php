@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\Blog;
@@ -89,9 +90,15 @@ class LoginController extends Controller
                 ->withErrors($e->validator)
                 ->with('show_register', true);
         } catch (\Exception $e) {
+            Log::error('Registration failed', [
+                'message' => $e->getMessage(),
+                'email' => $request->input('email'),
+                'username' => $request->input('username'),
+            ]);
+
             return redirect('/login?form=register')
                 ->withInput()
-                ->with('error', 'Registration failed. Please try again.')
+                ->with('error', 'Registration failed: '.$e->getMessage())
                 ->with('show_register', true);
         }
     }

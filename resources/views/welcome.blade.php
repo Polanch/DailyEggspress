@@ -135,6 +135,9 @@
                             </ul>
                         </div>
                     @endif
+                    @if(session('error'))
+                        <div class="form-error">{{ session('error') }}</div>
+                    @endif
                     @if(session('success'))
                         <div class="form-success">{{ session('success') }}</div>
                     @endif

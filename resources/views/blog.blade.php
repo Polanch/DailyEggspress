@@ -14,64 +14,31 @@
             <div class="popular-box">
                 <h1>Popular Blogs</h1>
                 <ul class="pop-list">
-                    @if(isset($popularBlogs) && count($popularBlogs))
-                        @foreach($popularBlogs as $popularBlog)
-                            <li>
-                                <a href="{{ url('/blogs/' . $popularBlog->id) }}">
-                                    <div class="pop-image">
-                                        <img src="{{ $popularBlog->thumbnail ? asset($popularBlog->thumbnail) : '/thumbnails/something10.jfif' }}" class="blog-thumbnail">
+                    @forelse($popularBlogs ?? collect() as $popularBlog)
+                        <li>
+                            <a href="{{ url('/blogs/' . $popularBlog->id) }}">
+                                <div class="pop-image">
+                                    <img src="{{ $popularBlog->thumbnail ? asset($popularBlog->thumbnail) : '/thumbnails/something10.jfif' }}" class="blog-thumbnail">
+                                </div>
+                                <div class="pop-content">
+                                    <h3>{{ $popularBlog->blog_title }}</h3>
+                                    <span class="pop-date"><p>{{ $popularBlog->created_at->format('F j, Y | g:i a') }}</p></span>
+                                    <div class="blog-stats">
+                                        <span class="view-count"><img src="/images/view.png" class="eyecon">{{ $popularBlog->views_count ?? 0 }}</span>
+                                        <span class="like-count">👍 {{ $popularBlog->likeCount ?? 0 }}</span>
+                                        <span class="dislike-count">👎 {{ $popularBlog->dislikeCount ?? 0 }}</span>
+                                        <span class="comment-count">💬 {{ $popularBlog->commentCount ?? 0 }}</span>
                                     </div>
-                                    <div class="pop-content">
-                                        <h3>{{ $popularBlog->blog_title }}</h3>
-                                        <span class="pop-date"><p>{{ $popularBlog->created_at->format('F j, Y | g:i a') }}</p></span>
-                                        <div class="blog-stats">
-                                            <span class="view-count"><img src="/images/view.png" class="eyecon">{{ $popularBlog->views_count ?? 0 }}</span>
-                                            <span class="like-count">👍 {{ $popularBlog->likeCount ?? 0 }}</span>
-                                            <span class="dislike-count">👎 {{ $popularBlog->dislikeCount ?? 0 }}</span>
-                                            <span class="comment-count">💬 {{ $popularBlog->commentCount ?? 0 }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                        @endforeach
-                    @else
-                        <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Sample Title here</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">300</span>
                                 </div>
                             </a>
                         </li>
+                    @empty
                         <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something2.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Sample Title here</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">300</span>
-                                </div>
-                            </a>
+                            <div class="pop-content">
+                                <h3>No blogs yet</h3>
+                            </div>
                         </li>
-                        <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something3.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Sample Title here</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">300</span>
-                                </div>
-                            </a>
-                        </li>
-                    @endif
+                    @endforelse
                 </ul>
                 <button id="pop-more">View All Popular Blogs <img src="/images/right.png" id="right-icn"></button>
             </div>
@@ -79,52 +46,31 @@
             <div class="random-box">
                 <h1>Random Blogs</h1>
                 <ul class="rand-list">
-                    @if(isset($randomBlogs) && count($randomBlogs))
-                        @foreach($randomBlogs as $randomBlog)
-                            <li>
-                                <a href="{{ url('/blogs/' . $randomBlog->id) }}">
-                                    <div class="pop-image">
-                                        <img src="{{ $randomBlog->thumbnail ? asset($randomBlog->thumbnail) : '/thumbnails/something10.jfif' }}" class="blog-thumbnail">
-                                    </div>
-                                    <div class="pop-content">
-                                        <h3>{{ $randomBlog->blog_title }}</h3>
-                                        <span class="pop-date"><p>{{ $randomBlog->created_at->format('F j, Y | g:i a') }}</p></span>
-                                        <div class="blog-stats">
-                                            <span class="view-count"><img src="/images/view.png" class="eyecon">{{ $randomBlog->views_count ?? 0 }}</span>
-                                            <span class="like-count">👍 {{ $randomBlog->likeCount ?? 0 }}</span>
-                                            <span class="dislike-count">👎 {{ $randomBlog->dislikeCount ?? 0 }}</span>
-                                            <span class="comment-count">💬 {{ $randomBlog->commentCount ?? 0 }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                        @endforeach
-                    @else
+                    @forelse($randomBlogs ?? collect() as $randomBlog)
                         <li>
-                            <a href="">
+                            <a href="{{ url('/blogs/' . $randomBlog->id) }}">
                                 <div class="pop-image">
-                                    <img src="/thumbnails/something7.jpg" class="blog-thumbnail">
+                                    <img src="{{ $randomBlog->thumbnail ? asset($randomBlog->thumbnail) : '/thumbnails/something10.jfif' }}" class="blog-thumbnail">
                                 </div>
                                 <div class="pop-content">
-                                    <h3>Random Title 1</h3>
-                                    <span class="pop-date"><p>January 30, 2028 | 8:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">120</span>
+                                    <h3>{{ $randomBlog->blog_title }}</h3>
+                                    <span class="pop-date"><p>{{ $randomBlog->created_at->format('F j, Y | g:i a') }}</p></span>
+                                    <div class="blog-stats">
+                                        <span class="view-count"><img src="/images/view.png" class="eyecon">{{ $randomBlog->views_count ?? 0 }}</span>
+                                        <span class="like-count">👍 {{ $randomBlog->likeCount ?? 0 }}</span>
+                                        <span class="dislike-count">👎 {{ $randomBlog->dislikeCount ?? 0 }}</span>
+                                        <span class="comment-count">💬 {{ $randomBlog->commentCount ?? 0 }}</span>
+                                    </div>
                                 </div>
                             </a>
                         </li>
+                    @empty
                         <li>
-                            <a href="">
-                                <div class="pop-image">
-                                    <img src="/thumbnails/something9.jpg" class="blog-thumbnail">
-                                </div>
-                                <div class="pop-content">
-                                    <h3>Random Title 2</h3>
-                                    <span class="pop-date"><p>January 12, 2027 | 6:00 p.m.</p></span>
-                                    <span class="view-count"><img src="/images/view.png" class="eyecon">87</span>
-                                </div>
-                            </a>
+                            <div class="pop-content">
+                                <h3>No blogs yet</h3>
+                            </div>
                         </li>
-                    @endif
+                    @endforelse
                 </ul>
                 <button id="rand-more">View Random Blogs <img src="/images/right.png" id="right-icn"></button>
             </div>

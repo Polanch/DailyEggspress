@@ -43,8 +43,10 @@
                     <img src="/images/right.png" class="profile-arrow" alt="Menu">
                 </button>
                 <div class="profile-dropdown" aria-hidden="true">
+                    @if(Auth::user()->role === 'user')
                     <a href="{{ route('user.profile') }}" class="profile-dd-item">Profile</a>
-                    <a href="/user/dashboard" class="profile-dd-item">Go Home</a>
+                    @endif
+                    <a href="{{ (Auth::user()->role === 'admin' || Auth::user()->role === 'moderator') ? '/admin/dashboard' : '/user/dashboard' }}" class="profile-dd-item">Go Home</a>
                     <form action="/logout" method="POST">
                         @csrf
                         <button type="submit" class="profile-dd-item profile-dd-btn">Logout</button>
@@ -54,8 +56,10 @@
             </div>
             <div class="condensed-sign-window user-condensed-sign-window">
                 <div class="cs-2 user-mobile-actions">
+                    @if(Auth::user()->role === 'user')
                     <a href="{{ route('user.profile') }}" class="mobile-user-link">Profile</a>
-                    <a href="/user/dashboard" class="mobile-user-link">Go Home</a>
+                    @endif
+                    <a href="{{ (Auth::user()->role === 'admin' || Auth::user()->role === 'moderator') ? '/admin/dashboard' : '/user/dashboard' }}" class="mobile-user-link">Go Home</a>
                     <form action="/logout" method="POST" class="mobile-logout-form">
                         @csrf
                         <button type="submit" id="cs-signout-btn">Logout</button>

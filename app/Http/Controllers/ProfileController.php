@@ -15,6 +15,10 @@ class ProfileController extends Controller
      */
     public function show()
     {
+        $user = Auth::user();
+        if ($user->role === 'admin' || $user->role === 'moderator') {
+            return redirect('/admin/dashboard');
+        }
         return view('profile_settings');
     }
 
@@ -23,6 +27,11 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
+        $user = Auth::user();
+        if ($user->role === 'admin' || $user->role === 'moderator') {
+            return redirect('/admin/dashboard');
+        }
+
         $request->validate([
             'profile_picture' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120', // 5MB
             'first_name' => 'nullable|string|max:255',

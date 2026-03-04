@@ -152,39 +152,28 @@
                     @endif
                 </h4>
                 {!! $latestBlog ? $latestBlog->blog_content : '' !!}
+                @if($latestBlog && is_array($latestBlog->tags) && count($latestBlog->tags))
+                    <p style="margin-top: 1rem; margin-bottom: 2rem; font-size: 14px;">
+                        @foreach($latestBlog->tags as $tag)
+                            <a href="{{ url('/tags/' . $tag) }}" style="color: #E8B400; text-decoration: none; margin-right: 0.5rem;">#{{ $tag }}</a>
+                        @endforeach
+                    </p>
+                @endif
 
                 @if($latestBlog)
-                    <div class="user-blog-actions">
-                        <div class="reaction-row">
-                            <button type="button" class="reaction-btn {{ $userReaction === 'like' ? 'active' : '' }}" data-reaction="like" data-blog-id="{{ $latestBlog->id }}" data-csrf="{{ csrf_token() }}">👍 Like (<span class="like-count">{{ $likeCount }}</span>)</button>
-                            <button type="button" class="reaction-btn {{ $userReaction === 'dislike' ? 'active' : '' }}" data-reaction="dislike" data-blog-id="{{ $latestBlog->id }}" data-csrf="{{ csrf_token() }}">👎 Dislike (<span class="dislike-count">{{ $dislikeCount }}</span>)</button>
-                        </div>
+                    <div class="reaction-row guest-reaction-row">
+                        <button type="button" class="reaction-btn" disabled>👍 Like (<span class="like-count">{{ $likeCount ?? 0 }}</span>)</button>
+                        <button type="button" class="reaction-btn" disabled>👎 Dislike (<span class="dislike-count">{{ $dislikeCount ?? 0 }}</span>)</button>
+                    </div>
 
-                        <div class="comment-box">
-                            <h3>Comments</h3>
-                            
-                            @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            
-                            @if($errors->any())
-                                <div class="alert alert-error">
-                                    @foreach($errors->all() as $error)
-                                        <p>{{ $error }}</p>
-                                    @endforeach
-                                </div>
-                            @endif
+                    <p class="member-only-note">
+                        Must be a member to join the conversation.
+                        <a href="{{ url('/login?form=register') }}" class="member-only-link">Join Here</a>
+                    </p>
 
-                            @auth
-                                <form action="{{ route('user.blog.comment', $latestBlog->id) }}" method="POST" class="comment-form">
-                                    @csrf
-                                    <textarea name="comment" rows="3" placeholder="Write your comment..." required></textarea>
-                                    <div class="char-counter"><span class="char-count">0</span>/1000</div>
-                                    <button type="submit" class="read-btn">Post Comment</button>
-                                </form>
-                            @endauth
-
-                            <ul class="comment-list">
+                    <div class="comment-box">
+                        <h3>Comments</h3>
+                        <ul class="comment-list">
                                 @forelse($comments as $comment)
                                     <li class="comment-item">
                                         <div class="comment-header">
@@ -201,20 +190,6 @@
                                             </div>
                                         </div>
                                         <p class="comment-text">{{ $comment->comment }}</p>
-                                        @auth
-                                            <button type="button" class="read-btn reply-btn" data-comment-id="{{ $comment->id }}">Reply</button>
-
-                                            <form action="{{ route('user.blog.comment', $latestBlog->id) }}" method="POST" class="reply-form" style="display: none;" data-comment-id="{{ $comment->id }}">
-                                                @csrf
-                                                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                                <textarea name="comment" rows="2" placeholder="Write your reply..." required></textarea>
-                                                <div class="char-counter"><span class="char-count">0</span>/1000</div>
-                                                <div class="reply-actions">
-                                                    <button type="submit" class="read-btn">Post Reply</button>
-                                                    <button type="button" class="read-btn cancel-reply-btn">Cancel</button>
-                                                </div>
-                                            </form>
-                                        @endauth
 
                                         @if($comment->replies->count() > 0)
                                             <ul class="reply-list">

@@ -748,7 +748,7 @@ class BlogController extends Controller
             return view('tag_blogs_user', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags', 'comments', 'likeCount', 'dislikeCount', 'userReaction'));
         }
         
-        return view('tag_blogs', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags'));
+        return view('tag_blogs', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags', 'comments', 'likeCount', 'dislikeCount'));
     }
 
     public function saveReaction(Request $request, $id)

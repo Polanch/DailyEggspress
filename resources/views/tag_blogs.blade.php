@@ -141,6 +141,76 @@
                 <p class="view-count"><img src="/images/view.png" class="eyecon">{{ $topBlog ? $topBlog->views_count ?? 0 : 0 }} views</p>
 
                 {!! $topBlog ? $topBlog->blog_content : '' !!}
+                @if($topBlog && is_array($topBlog->tags) && count($topBlog->tags))
+                    <p style="margin-top: 1rem; margin-bottom: 2rem; font-size: 14px;">
+                        @foreach($topBlog->tags as $tag)
+                            <a href="{{ url('/tags/' . $tag) }}" style="color: #E8B400; text-decoration: none; margin-right: 0.5rem;">#{{ $tag }}</a>
+                        @endforeach
+                    </p>
+                @endif
+
+                @if($topBlog)
+                    <div class="reaction-row guest-reaction-row">
+                        <button type="button" class="reaction-btn" disabled>👍 Like (<span class="like-count">{{ $likeCount ?? 0 }}</span>)</button>
+                        <button type="button" class="reaction-btn" disabled>👎 Dislike (<span class="dislike-count">{{ $dislikeCount ?? 0 }}</span>)</button>
+                    </div>
+
+                    <p class="member-only-note">
+                        Must be a member to join the conversation.
+                        <a href="{{ url('/login?form=register') }}" class="member-only-link">Join Here</a>
+                    </p>
+
+                    <div class="comment-box">
+                        <h3>Comments</h3>
+                        <ul class="comment-list">
+                            @forelse($comments as $comment)
+                                <li class="comment-item">
+                                    <div class="comment-header">
+                                        @if($comment->user && $comment->user->profile_picture)
+                                            <img src="{{ Str::startsWith($comment->user->profile_picture, 'storage/') ? asset($comment->user->profile_picture) : asset('storage/' . $comment->user->profile_picture) }}" alt="{{ $comment->user->first_name }}" class="comment-avatar">
+                                        @else
+                                            <img src="/images/empty.png" alt="User" class="comment-avatar">
+                                        @endif
+                                        <div class="comment-user-info">
+                                            <p class="comment-user">
+                                                {{ $comment->user ? $comment->user->first_name . ' ' . $comment->user->last_name : 'User' }}
+                                            </p>
+                                            <span class="comment-date">{{ $comment->created_at->format('M d, Y h:i a') }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="comment-text">{{ $comment->comment }}</p>
+
+                                    @if($comment->replies->count() > 0)
+                                        <ul class="reply-list">
+                                            @foreach($comment->replies as $reply)
+                                                <li class="comment-item reply-item">
+                                                    <div class="comment-header">
+                                                        @if($reply->user && $reply->user->profile_picture)
+                                                            <img src="{{ Str::startsWith($reply->user->profile_picture, 'storage/') ? asset($reply->user->profile_picture) : asset('storage/' . $reply->user->profile_picture) }}" alt="{{ $reply->user->first_name }}" class="comment-avatar">
+                                                        @else
+                                                            <img src="/images/empty.png" alt="User" class="comment-avatar">
+                                                        @endif
+                                                        <div class="comment-user-info">
+                                                            <p class="comment-user">
+                                                                {{ $reply->user ? $reply->user->first_name . ' ' . $reply->user->last_name : 'User' }}
+                                                            </p>
+                                                            <span class="comment-date">{{ $reply->created_at->format('M d, Y h:i a') }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <p class="comment-text">{{ $reply->comment }}</p>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </li>
+                            @empty
+                                <li class="comment-item">
+                                    <p class="comment-text">No comments yet. Be the first to comment.</p>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
         <div class="blog-boxes">

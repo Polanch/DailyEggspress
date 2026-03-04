@@ -139,6 +139,8 @@
                         Unknown Author
                     @endif
                 </h4>
+                <p class="view-count"><img src="/images/view.png" class="eyecon">{{ $latestBlog ? $latestBlog->views_count ?? 0 : 0 }} views</p>
+
                 {!! $latestBlog ? $latestBlog->blog_content : '' !!}
                 @if($latestBlog && is_array($latestBlog->tags) && count($latestBlog->tags))
                     <p style="margin-top: 1rem; margin-bottom: 2rem; font-size: 14px;">

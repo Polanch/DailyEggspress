@@ -61,6 +61,14 @@ class BlogController extends Controller
                     $authorName = $comment->user?->username ?? 'Unknown user';
                 }
 
+                $parentAuthor = null;
+                if ($comment->parent_id && $comment->parent) {
+                    $parentAuthor = trim((string) (($comment->parent->user?->first_name ?? '') . ' ' . ($comment->parent->user?->last_name ?? '')));
+                    if ($parentAuthor === '') {
+                        $parentAuthor = $comment->parent->user?->username ?? 'Unknown user';
+                    }
+                }
+
                 return [
                     'id' => $comment->id,
                     'author' => $authorName,
@@ -70,6 +78,8 @@ class BlogController extends Controller
                     'created_at_short' => $comment->created_at?->format('M d, Y') ?? '',
                     'user_role' => $comment->user?->role ?? 'user',
                     'profile_picture' => $comment->user?->profile_picture ?? null,
+                    'is_reply' => (bool) $comment->parent_id,
+                    'parent_author' => $parentAuthor,
                 ];
             })
             ->values();
@@ -127,10 +137,10 @@ class BlogController extends Controller
     {
         return BlogComment::query()
             ->with([
-                'user:id,first_name,last_name,username,role',
+                'user:id,first_name,last_name,username,role,profile_picture',
                 'blog:id,user_id,blog_title',
+                'parent.user:id,first_name,last_name,username', // Load parent comment and its user
             ])
-            ->whereNull('parent_id')
             ->whereHas('blog', function ($query) {
                 $query->where('user_id', Auth::id());
             })

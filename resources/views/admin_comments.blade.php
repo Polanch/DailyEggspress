@@ -45,6 +45,11 @@
 							</div>
 						</div>
 						<p class="admin-comment-blog">On: {{ $comment->blog?->blog_title ?? 'Untitled blog' }}</p>
+						@if($comment->parent_id)
+							<p class="admin-comment-reply-to" style="color: #888; font-size: 12px; margin: 5px 0;">
+								↳ Reply to: {{ $comment->parent?->user ? ($comment->parent->user->first_name . ' ' . $comment->parent->user->last_name) : 'Unknown user' }}
+							</p>
+						@endif
 					<div class="admin-comment-text-wrapper">
 						<p class="admin-comment-text {{ strlen($comment->comment) > 150 ? 'truncated' : '' }}" data-full-text="{{ htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8') }}">{{ $comment->comment }}</p>
 						@if(strlen($comment->comment) > 150)
@@ -181,6 +186,10 @@
 						}
 					}
 
+					const replyToHtml = comment.is_reply && comment.parent_author
+						? `<p class="admin-comment-reply-to" style="color: #888; font-size: 12px; margin: 5px 0;">↳ Reply to: ${escapeHtml(comment.parent_author)}</p>`
+						: '';
+
 					return `
 						<article class="admin-comment-card">
 							<div class="admin-comment-main">
@@ -192,6 +201,7 @@
 									</div>
 								</div>
 								<p class="admin-comment-blog">On: ${highlightMatch(comment.blog_title, keyword)}</p>
+								${replyToHtml}
 								<div class="admin-comment-text-wrapper">
 									<p class="admin-comment-text ${truncatedClass}" data-full-text="${escapeHtml(commentText)}">${highlightMatch(commentText, keyword)}</p>
 									${seeMoreBtn}

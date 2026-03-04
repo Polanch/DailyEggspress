@@ -95,7 +95,7 @@
             </button>
             
             <div class="top-menu">
-                <a class="top-btn t1" href="/home" aria-label="View Website">
+                <a class="top-btn t1" href="/user/dashboard" aria-label="View Website">
                     <img src="/images/top1.png" class="top-icn">
                     <span class="btn-text">View Website</span>
                 </a>

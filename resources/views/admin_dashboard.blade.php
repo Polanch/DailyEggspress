@@ -3,7 +3,7 @@
 @section('content')
     <div class="home-header">
         <h1 class="admin-header"><img src="/images/menu1.png" class="admin-h-icn">Dashboard<span class="slash">/</span> <span id="hh">Home</span></h1>
-        <h3 class="admin-subheader">Analytics Overview</h3>
+        <h3 class="admin-subheader">Dashboard</h3>
         
         <div class="home-box">
             <img src="/images/home1.png" class="h-icns">

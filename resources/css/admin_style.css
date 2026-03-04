@@ -882,6 +882,7 @@ body.active .main-content{
     .home-box{
         padding: 10px;
         border-radius: 8px;
+        grid-template-columns: 50px 1fr;
     }
 
     .home-box p{
@@ -911,6 +912,114 @@ body.active .main-content{
 
     }
 
+}
+
+@media (max-width: 650px) {
+    .home-header{
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .admin-header{
+        grid-column: span 2;
+    }
+
+    .admin-subheader{
+        grid-column: span 2;
+        font-size: 20px;
+    }
+
+    .home-box{
+        width: 100%;
+        padding: 8px;
+        grid-template-columns: 45px 1fr;
+        gap: 8px;
+    }
+
+    .home-box p{
+        font-size: 12px;
+        margin-left: 0;
+    }
+
+    .home-box h2{
+        font-size: 24px;
+        margin-left: 0;
+    }
+
+    .h-icns{
+        width: 40px;
+    }
+
+    .add-status{
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-header{
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: unset;
+        grid-template-rows: unset;
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .admin-header{
+        width: 100%;
+        font-size: 14px;
+        grid-column: unset;
+        order: 1;
+    }
+
+    .admin-subheader{
+        width: 100%;
+        font-size: 18px;
+        grid-column: unset;
+        order: 2;
+    }
+
+    .home-box{
+        width: 100%;
+        height: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        grid-template-columns: unset;
+        grid-template-rows: unset;
+        margin: 0;
+        order: 3;
+    }
+
+    .home-box p{
+        font-size: 12px;
+        margin-left: 0;
+        margin: 0;
+    }
+
+    .home-box h2{
+        font-size: 22px;
+        margin-left: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .h-icns{
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+    }
+
+    .add-status{
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 860px) {

@@ -1185,6 +1185,37 @@ class BlogController extends Controller
         return redirect()->route('admin.users')->with('success', "User '{$username}' has been permanently deleted.");
     }
 
+    public function toggleModeratorRole($id)
+    {
+        // Only admins can promote/demote users
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized: Only administrators can manage moderator roles.');
+        }
+        
+        $user = User::findOrFail($id);
+        
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', 'Cannot modify an admin account role.');
+        }
+        
+        if ($user->role === 'banned') {
+            return redirect()->back()->with('error', 'Cannot promote a banned user. Please unban them first.');
+        }
+        
+        if ((int) $id === (int) Auth::id()) {
+            return redirect()->back()->with('error', 'Cannot modify your own role.');
+        }
+        
+        // Toggle between moderator and user
+        if ($user->role === 'moderator') {
+            $user->update(['role' => 'user']);
+            return redirect()->back()->with('success', "User '{$user->username}' has been demoted to user.");
+        } else {
+            $user->update(['role' => 'moderator']);
+            return redirect()->back()->with('success', "User '{$user->username}' has been promoted to moderator.");
+        }
+    }
+
     public function showAdminTrash()
     {
         $trashBlogs = Blog::where('blog_status', 'trash')

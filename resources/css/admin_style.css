@@ -3081,6 +3081,24 @@ textarea.auto-grow:focus{
     background: #c82333;
 }
 
+.promote-btn{
+    background: #007bff;
+    color: #fff;
+}
+
+.promote-btn:hover{
+    background: #0056b3;
+}
+
+.demote-btn{
+    background: #6c757d;
+    color: #fff;
+}
+
+.demote-btn:hover{
+    background: #5a6268;
+}
+
 .users-pagination{
     display: flex;
     justify-content: center;

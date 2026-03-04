@@ -51,6 +51,7 @@ Route::middleware('checkRole:admin')->group(function () {
     Route::post('/admin/trash/{id}/restore', [BlogController::class, 'restoreFromTrash'])->name('admin.trash.restore');
     Route::delete('/admin/trash/{id}', [BlogController::class, 'deleteTrashBlog'])->name('admin.trash.delete');
     Route::delete('/admin/users/{id}', [BlogController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/admin/users/{id}/toggle-moderator', [BlogController::class, 'toggleModeratorRole'])->name('admin.users.toggleModerator');
 });
 
 Route::get('/email/verify', function () {

@@ -106,6 +106,14 @@
 							</form>
 						@endif
 					@if(Auth::user()->role === 'admin')
+						@if($user->role !== 'banned' && $user->role !== 'admin')
+							<form method="POST" action="{{ route('admin.users.toggleModerator', $user->id) }}" onsubmit="return confirm('Are you sure you want to {{ $user->role === 'moderator' ? 'demote this user to regular user' : 'promote this user to moderator' }}?');">
+								@csrf
+								<button type="submit" class="user-btn {{ $user->role === 'moderator' ? 'demote-btn' : 'promote-btn' }}">
+									{{ $user->role === 'moderator' ? 'Demote to User' : 'Promote to Moderator' }}
+								</button>
+							</form>
+						@endif
 					<form method="POST" action="{{ route('admin.users.delete', $user->id) }}" onsubmit="return confirm('WARNING: This will permanently delete this user account and all their data. This action cannot be undone. Are you sure?');">
 						@csrf
 						@method('DELETE')
@@ -148,6 +156,7 @@
 		const appealRouteTemplate = @json(route('admin.users.appeal', ['id' => '__ID__']));
 		const banRouteTemplate = @json(route('admin.users.ban', ['id' => '__ID__']));
 		const deleteRouteTemplate = @json(route('admin.users.delete', ['id' => '__ID__']));
+		const toggleModeratorRouteTemplate = @json(route('admin.users.toggleModerator', ['id' => '__ID__']));
 		const currentUserRole = @json(Auth::user()->role);
 		const canDeleteUsers = currentUserRole === 'admin';
 
@@ -211,6 +220,10 @@
 					<input type="hidden" name="_method" value="DELETE">
 					<button type="submit" class="user-btn delete-btn">Remove User</button>
 				</form>` : '';
+				const toggleModeratorForm = (canDeleteUsers && !isBanned && user.role !== 'admin') ? `<form method="POST" action="${buildRoute(toggleModeratorRouteTemplate, user.id)}" onsubmit="return confirm('Are you sure you want to ${user.role === 'moderator' ? 'demote this user to regular user' : 'promote this user to moderator'}?');">
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
+					<button type="submit" class="user-btn ${user.role === 'moderator' ? 'demote-btn' : 'promote-btn'}">${user.role === 'moderator' ? 'Demote to User' : 'Promote to Moderator'}</button>
+				</form>` : '';
 				const userActions = isBanned 
 					? `<div class="user-actions">
 							<button class="user-btn banned-btn" disabled>Banned</button>
@@ -223,6 +236,7 @@
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 								<button type="submit" class="user-btn ban-btn">Ban User</button>
 							</form>
+							${toggleModeratorForm}
 							${deleteForm}
 						</div>`;
 				const statusText = user.is_online ? 'Online' : 'Offline';

@@ -643,6 +643,35 @@ class BlogController extends Controller
 
         $topBlog = $blogs->sortByDesc('likeCount')->first();
 
+        // Initialize default values for comments and reactions
+        $comments = collect();
+        $likeCount = 0;
+        $dislikeCount = 0;
+        $userReaction = null;
+
+        // If there's a topBlog, fetch its comments and reactions
+        if ($topBlog) {
+            $comments = BlogComment::where('blog_id', $topBlog->id)
+                ->whereNull('parent_id')
+                ->with(['user', 'replies.user'])
+                ->latest()
+                ->get();
+
+            $likeCount = BlogReaction::where('blog_id', $topBlog->id)
+                ->where('reaction_type', 'like')
+                ->count();
+
+            $dislikeCount = BlogReaction::where('blog_id', $topBlog->id)
+                ->where('reaction_type', 'dislike')
+                ->count();
+
+            if (Auth::check()) {
+                $userReaction = BlogReaction::where('blog_id', $topBlog->id)
+                    ->where('user_id', Auth::id())
+                    ->value('reaction_type');
+            }
+        }
+
         // Get similar blogs - blogs that share tags with any blog in this collection
         $allTagsInCollection = [];
         foreach ($blogs as $blog) {
@@ -708,7 +737,7 @@ class BlogController extends Controller
 
         // Check if user is authenticated and use appropriate view
         if (Auth::check()) {
-            return view('tag_blogs_user', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags'));
+            return view('tag_blogs_user', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags', 'comments', 'likeCount', 'dislikeCount', 'userReaction'));
         }
         
         return view('tag_blogs', compact('blogs', 'tag', 'topBlog', 'similarBlogs', 'moreBlogs', 'tags'));

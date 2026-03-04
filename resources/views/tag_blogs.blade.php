@@ -138,6 +138,8 @@
                         Unknown Author
                     @endif
                 </h4>
+                <p class="view-count"><img src="/images/view.png" class="eyecon">{{ $topBlog ? $topBlog->views_count ?? 0 : 0 }} views</p>
+
                 {!! $topBlog ? $topBlog->blog_content : '' !!}
             </div>
         </div>

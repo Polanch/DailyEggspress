@@ -31,7 +31,7 @@
         <div class="dashboard-grid">
             <!-- Blog Posts Chart -->
             <div class="dashboard-card card-large">
-                <h3 class="card-title"><img src="">Blog Posts (Last 6 Months)</h3>
+                <h3 class="card-title"><img src="/images/d1.png">Blog Posts (Last 6 Months)</h3>
                 <div class="chart-container">
                     <div class="bar-chart">
                         @php
@@ -53,31 +53,31 @@
 
             <!-- Content Status -->
             <div class="dashboard-card card-tall">
-                <h3 class="card-title"><img src="">Content Status</h3>
+                <h3 class="card-title"><img src="/images/d2.png">Content Status</h3>
                 <div class="stats-grid-vertical">
                     <div class="stat-item">
-                        <div class="stat-icon published"><img src=""></div>
+                        <div class="stat-icon published"><img src="/images/d2-1.png"></div>
                         <div class="stat-info">
                             <span class="stat-label">Published</span>
                             <span class="stat-value">{{ $blogsByStatus['published'] }}</span>
                         </div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-icon draft"><img src=""></div>
+                        <div class="stat-icon draft"><img src="/images/d2-2.png"></div>
                         <div class="stat-info">
                             <span class="stat-label">Drafts</span>
                             <span class="stat-value">{{ $blogsByStatus['draft'] }}</span>
                         </div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-icon scheduled"><img src=""></div>
+                        <div class="stat-icon scheduled"><img src="/images/d2-3.png"></div>
                         <div class="stat-info">
                             <span class="stat-label">Scheduled</span>
                             <span class="stat-value">{{ $blogsByStatus['scheduled'] }}</span>
                         </div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-icon trash"><img src=""></div>
+                        <div class="stat-icon trash"><img src="/images/d2-4.png"></div>
                         <div class="stat-info">
                             <span class="stat-label">Trash</span>
                             <span class="stat-value">{{ $blogsByStatus['trash'] }}</span>
@@ -88,7 +88,7 @@
 
             <!-- Most Popular Blogs -->
             <div class="dashboard-card card-wide">
-                <h3 class="card-title"><img src="">Most Popular Blogs</h3>
+                <h3 class="card-title"><img src="/images/d3.png">Most Popular Blogs</h3>
                 <div class="popular-list">
                     @forelse($popularBlogs as $blog)
                         <div class="popular-item">
@@ -108,31 +108,31 @@
 
             <!-- Engagement Stats -->
             <div class="dashboard-card card-medium">
-                <h3 class="card-title"><img src="">Engagement Stats</h3>
+                <h3 class="card-title"><img src="/images/d4.png">Engagement Stats</h3>
                 <div class="engagement-grid-compact">
                     <div class="engagement-item-compact">
-                        <div class="engagement-icon-small"><img src=""></div>
+                        <div class="engagement-icon-small"><img src="/images/d4-1.png"></div>
                         <div class="engagement-info-compact">
                             <span class="engagement-value-compact">{{ $totalLikes }}</span>
                             <span class="engagement-label-compact">Likes</span>
                         </div>
                     </div>
                     <div class="engagement-item-compact">
-                        <div class="engagement-icon-small"><img src=""></div>
+                        <div class="engagement-icon-small"><img src="/images/d4-2.png"></div>
                         <div class="engagement-info-compact">
                             <span class="engagement-value-compact">{{ $totalDislikes }}</span>
                             <span class="engagement-label-compact">Dislikes</span>
                         </div>
                     </div>
                     <div class="engagement-item-compact">
-                        <div class="engagement-icon-small"><img src=""></div>
+                        <div class="engagement-icon-small"><img src="/images/d4-3.png"></div>
                         <div class="engagement-info-compact">
                             <span class="engagement-value-compact">{{ $averageViewsPerBlog }}</span>
                             <span class="engagement-label-compact">Avg Views</span>
                         </div>
                     </div>
                     <div class="engagement-item-compact">
-                        <div class="engagement-icon-small"><img src=""></div>
+                        <div class="engagement-icon-small"><img src="/images/d4-4.png"></div>
                         <div class="engagement-info-compact">
                             <span class="engagement-value-compact">{{ $averageCommentsPerBlog }}</span>
                             <span class="engagement-label-compact">Avg Comments</span>

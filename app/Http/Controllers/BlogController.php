@@ -274,6 +274,7 @@ class BlogController extends Controller
             ->get();
 
         $popularBlogs = Blog::where('blog_status', 'published')
+            ->where('id', '!=', $latestBlog->id)
             ->latest()
             ->take(5)
             ->get()
@@ -291,6 +292,7 @@ class BlogController extends Controller
             });
 
         $randomBlogs = Blog::where('blog_status', 'published')
+            ->where('id', '!=', $latestBlog->id)
             ->inRandomOrder()
             ->take(4)
             ->get()
@@ -683,8 +685,10 @@ class BlogController extends Controller
 
         $similarBlogs = Blog::where('blog_status', 'published')
             ->get()
-            ->filter(function ($blog) use ($allTagsInCollection, $tag) {
+            ->filter(function ($blog) use ($allTagsInCollection, $tag, $topBlog) {
                 if (!is_array($blog->tags)) return false;
+                // Exclude the top blog from similar blogs
+                if ($topBlog && $blog->id === $topBlog->id) return false;
                 // Check if blog has any tags from our collection, but isn't just the main tag
                 foreach ($blog->tags as $blogTag) {
                     if (in_array($blogTag, $allTagsInCollection) && $blogTag !== $tag) {
@@ -711,6 +715,10 @@ class BlogController extends Controller
         // Get more blogs - least viewed blogs
         $moreBlogs = Blog::where('blog_status', 'published')
             ->get()
+            ->filter(function ($blog) use ($topBlog) {
+                // Exclude the top blog from more blogs
+                return !$topBlog || $blog->id !== $topBlog->id;
+            })
             ->map(function ($blog) {
                 $blog->likeCount = BlogReaction::where('blog_id', $blog->id)
                     ->where('reaction_type', 'like')

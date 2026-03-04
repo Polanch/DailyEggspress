@@ -44,7 +44,7 @@
             <div class="condensed-sign-window">
                 <div class="cs-1">
                     <p>Do you want to get in touch with me?</p>
-                    <button id="cs-portfolio-btn"><img src="images/portfolio.png" id="portfolio-icn"> Visit my Portfolio</button>
+                    <button id="cs-portfolio-btn"><img src="/images/portfolio.png" id="portfolio-icn"> Visit my Portfolio</button>
                 </div>
                 <div class="cs-2">
                     <p>Don't have an account?</p>

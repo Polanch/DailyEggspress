@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="/images/browser-logo.png">
     <title>Daily Eggspress</title>
     @vite('resources/css/welcome_style.css')
     <script>
@@ -57,8 +58,8 @@
                     <label for="login-password">Password</label>
                     <div class="input-icon">
                         <span class="icon-lock"><img src="/images/l2.png" class="log-icn"></span>
-                        <input id="login-password" type="password" name="password" placeholder="Enter your password" required>
-                        <span id="toggle-password" style="cursor:pointer;">
+                        <input class="login-password" id="login-password" type="password" name="password" placeholder="Enter your password" required>
+                        <span class="toggle-password" style="cursor:pointer;">
                             <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" style="vertical-align:middle;display:inline;"><path stroke="#9C6D55" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3" stroke="#9C6D55" stroke-width="2"/></svg>
                             <svg class="eye-closed-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" style="vertical-align:middle;display:none;"><path stroke="#9C6D55" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3" stroke="#9C6D55" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#9C6D55" stroke-width="2"/></svg>
                         </span>

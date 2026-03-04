@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="/images/browser-logo.png">
     <title>Admin Panel</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite('resources/css/admin_style.css')
